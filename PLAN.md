@@ -88,11 +88,11 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
   - Implement `app/core/jwt.py` for generating Access Tokens and Refresh Tokens.
   - Include expiration logic and token payload structure (sub, exp, iat).
   - Verification, README Update, Git Commit & Push.
-- [ ] 4.3 OAuth2 Password Bearer Scheme Configuration
+- [x] 4.3 OAuth2 Password Bearer Scheme Configuration
   - Configure `OAuth2PasswordBearer` in `app/core/deps.py`.
   - Implement token extraction dependency from HTTP Authorization header.
   - Verification, README Update, Git Commit & Push.
-- [ ] 4.4 `get_current_user` Auth Dependency
+- [x] 4.4 `get_current_user` Auth Dependency
   - Build dependency `get_current_user` to decode token, validate user existence in database, and return `UserModel`.
   - Add `get_current_active_user` check for inactive account guard.
   - Verification, README Update, Git Commit & Push.
