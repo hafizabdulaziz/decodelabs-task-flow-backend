@@ -13,7 +13,7 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
   - Create `requirements.txt` / `pyproject.toml` with pinned dependency versions (`fastapi`, `uvicorn[standard]`, `pydantic[email]`, `pydantic-settings`, `sqlalchemy`, `asyncpg`, `alembic`, `passlib[argon2]`, `python-jose[cryptography]`, `python-multipart`, `pytest`, `pytest-asyncio`, `httpx`).
   - Install dependencies and verify environment compatibility.
   - Verification, README Update, Git Commit & Push.
-- [ ] 1.3 Environment Variables & Configuration Management
+- [x] 1.3 Environment Variables & Configuration Management
   - Create `.env.example` and `.env` with key variables (`DATABASE_URL`, `JWT_SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `APP_ENV`).
   - Implement `app/config.py` using Pydantic BaseSettings for type-safe environment loading.
   - Verification, README Update, Git Commit & Push.
