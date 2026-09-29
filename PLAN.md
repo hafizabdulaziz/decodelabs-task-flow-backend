@@ -84,7 +84,7 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
   - Implement `app/core/security.py` for password hashing and verification using `passlib` with `argon2`.
   - Write unit tests for password hashing and verification.
   - Verification, README Update, Git Commit & Push.
-- [ ] 4.2 JWT Token Generation & Verification Utilities
+- [x] 4.2 JWT Token Generation & Verification Utilities
   - Implement `app/core/jwt.py` for generating Access Tokens and Refresh Tokens.
   - Include expiration logic and token payload structure (sub, exp, iat).
   - Verification, README Update, Git Commit & Push.
