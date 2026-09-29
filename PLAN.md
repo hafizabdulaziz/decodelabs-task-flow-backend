@@ -21,7 +21,7 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
   - Build full directory tree: `app/api/`, `app/core/`, `app/db/`, `app/models/`, `app/schemas/`, `app/services/`, `tests/`.
   - Add empty `__init__.py` files across modules.
   - Verification, README Update, Git Commit & Push.
-- [ ] 1.5 Minimal FastAPI Core Entrypoint
+- [x] 1.5 Minimal FastAPI Core Entrypoint
   - Create `app/main.py` with basic FastAPI app instance, health check route (`GET /health`), and root route (`GET /`).
   - Test server startup using Uvicorn.
   - Verification, README Update, Git Commit & Push.
