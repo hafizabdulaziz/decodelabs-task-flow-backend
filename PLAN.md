@@ -108,7 +108,7 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
   - Implement user registration endpoint with email uniqueness check, password hashing, and user creation.
   - Return user response schema (excluding password).
   - Verification, README Update, Git Commit & Push.
-- [ ] 5.2 User Login Endpoint (`POST /api/v1/auth/login`)
+- [x] 5.2 User Login Endpoint (`POST /api/v1/auth/login`)
   - Implement OAuth2 compliant login endpoint accepting form-data credentials.
   - Authenticate user credentials and return JWT Access Token (`token_type: bearer`).
   - Verification, README Update, Git Commit & Push.

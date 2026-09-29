@@ -3,13 +3,15 @@ Authentication API router for user registration and login.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from app.db.session import get_db
 from app.models.user import UserModel
 from app.schemas.user import UserCreate, UserResponse
-from app.core.security import hash_password
+from app.core.security import hash_password, verify_password
+from app.core.jwt import create_access_token
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -22,7 +24,6 @@ async def register_user(
     """
     Register a new user account with email uniqueness validation and password hashing.
     """
-    # Check if user with email already exists
     result = await db.execute(select(UserModel).where(UserModel.email == user_in.email))
     existing_user = result.scalars().first()
     if existing_user:
@@ -31,7 +32,6 @@ async def register_user(
             detail="Email already registered",
         )
 
-    # Create new user instance
     hashed_pwd = hash_password(user_in.password)
     new_user = UserModel(
         email=user_in.email,
@@ -46,3 +46,34 @@ async def register_user(
     await db.refresh(new_user)
 
     return new_user
+
+
+@router.post("/login")
+async def login_access_token(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    OAuth2 compatible login endpoint, returning a JWT access token upon successful authentication.
+    """
+    result = await db.execute(select(UserModel).where(UserModel.email == form_data.username))
+    user = result.scalars().first()
+
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Inactive user account",
+        )
+
+    access_token = create_access_token(data={"sub": user.email})
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+    }
