@@ -17,7 +17,7 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
   - Create `.env.example` and `.env` with key variables (`DATABASE_URL`, `JWT_SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`, `APP_ENV`).
   - Implement `app/config.py` using Pydantic BaseSettings for type-safe environment loading.
   - Verification, README Update, Git Commit & Push.
-- [ ] 1.4 Application Folder Structure Setup
+- [x] 1.4 Application Folder Structure Setup
   - Build full directory tree: `app/api/`, `app/core/`, `app/db/`, `app/models/`, `app/schemas/`, `app/services/`, `tests/`.
   - Add empty `__init__.py` files across modules.
   - Verification, README Update, Git Commit & Push.
