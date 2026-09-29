@@ -29,12 +29,12 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
 ---
 
 ## 🗄️ PHASE 2: Database Architecture & Async SQLAlchemy Setup
-- [ ] 2.1 Async Database Engine & Session Factory
+- [x] 2.1 Async Database Engine & Session Factory
   - Implement `app/db/session.py` with Async SQLAlchemy engine (`create_async_engine`).
   - Configure `async_sessionmaker` for async session context management.
   - Create dependency injector `get_db()` for FastAPI route dependency injection.
   - Verification, README Update, Git Commit & Push.
-- [ ] 2.2 Declarative Base & Shared Model Attributes
+- [x] 2.2 Declarative Base & Shared Model Attributes
   - Set up `app/db/base.py` with `DeclarativeBase`.
   - Add common mixins (id, created_at, updated_at with timezone support).
   - Verification, README Update, Git Commit & Push.

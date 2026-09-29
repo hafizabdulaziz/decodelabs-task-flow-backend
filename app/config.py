@@ -2,7 +2,11 @@
 Application configuration management using Pydantic BaseSettings.
 """
 
+from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Load .env file explicitly with override=True to prioritize .env over system env vars
+load_dotenv(override=True)
 
 
 class Settings(BaseSettings):
