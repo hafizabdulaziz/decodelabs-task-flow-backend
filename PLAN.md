@@ -104,7 +104,7 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
 ---
 
 ## 🔑 PHASE 5: User Management & Authentication API Endpoints
-- [ ] 5.1 User Registration Endpoint (`POST /api/v1/auth/register`)
+- [x] 5.1 User Registration Endpoint (`POST /api/v1/auth/register`)
   - Implement user registration endpoint with email uniqueness check, password hashing, and user creation.
   - Return user response schema (excluding password).
   - Verification, README Update, Git Commit & Push.
