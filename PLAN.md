@@ -4,12 +4,12 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
 ---
 
 ## 📅 PHASE 1: Repository Initialization & Environment Setup
-- [ ] 1.1 Directory & Virtual Environment Creation
+- [x] 1.1 Directory & Virtual Environment Creation
   - Local folder structure check.
   - Python 3.13 virtual environment setup (`python -m venv venv`).
   - `.gitignore` configuration for Python, FastAPI, Alembic, Venv, and `.env` files.
   - Verification, README Update, Git Commit & Push.
-- [ ] 1.2 Project Dependencies Configuration
+- [x] 1.2 Project Dependencies Configuration
   - Create `requirements.txt` / `pyproject.toml` with pinned dependency versions (`fastapi`, `uvicorn[standard]`, `pydantic[email]`, `pydantic-settings`, `sqlalchemy`, `asyncpg`, `alembic`, `passlib[argon2]`, `python-jose[cryptography]`, `python-multipart`, `pytest`, `pytest-asyncio`, `httpx`).
   - Install dependencies and verify environment compatibility.
   - Verification, README Update, Git Commit & Push.
