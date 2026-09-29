@@ -38,16 +38,16 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
   - Set up `app/db/base.py` with `DeclarativeBase`.
   - Add common mixins (id, created_at, updated_at with timezone support).
   - Verification, README Update, Git Commit & Push.
-- [ ] 2.3 Alembic Migration Framework Initialization
+- [x] 2.3 Alembic Migration Framework Initialization
   - Initialize Alembic (`alembic init -t async alembic`).
   - Configure `alembic/env.py` to connect using dynamic async engine settings from `app/config.py`.
   - Import Base target metadata into Alembic configuration.
   - Verification, README Update, Git Commit & Push.
-- [ ] 2.4 Neon PostgreSQL Connection Verification
+- [x] 2.4 Neon PostgreSQL Connection Verification
   - Setup Neon Serverless PostgreSQL database connection strings (`postgresql+asyncpg://...`).
   - Run connection ping test to verify remote database connectivity.
   - Verification, README Update, Git Commit & Push.
-- [ ] 2.5 DB Diagnostics & Sanity Check Scripts
+- [x] 2.5 DB Diagnostics & Sanity Check Scripts
   - Write CLI utility script to test database read/write readiness.
   - Execute test and verify clean disconnection handling.
   - Verification, README Update, Git Commit & Push.
@@ -55,24 +55,24 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
 ---
 
 ## 👤 PHASE 3: User Entity, Data Models & Alembic Migrations
-- [ ] 3.1 User Database Model (UserModel)
+- [x] 3.1 User Database Model (UserModel)
   - Create `app/models/user.py` with fields: id, email (unique, indexed), hashed_password, full_name, is_active, is_superuser, created_at, updated_at.
   - Set up table constraints and relationships.
   - Verification, README Update, Git Commit & Push.
-- [ ] 3.2 Task Database Model (TaskModel)
+- [x] 3.2 Task Database Model (TaskModel)
   - Create `app/models/task.py` with fields: id, title, description, status (Enum: pending, in_progress, completed), priority (Enum: low, medium, high), due_date, owner_id (Foreign Key -> users.id), created_at, updated_at.
   - Add foreign key relationship back to `UserModel`.
   - Verification, README Update, Git Commit & Push.
-- [ ] 3.3 Pydantic Data Schemas (User & Task)
+- [x] 3.3 Pydantic Data Schemas (User & Task)
   - Create `app/schemas/user.py` (`UserCreate`, `UserResponse`, `UserUpdate`).
   - Create `app/schemas/task.py` (`TaskCreate`, `TaskResponse`, `TaskUpdate`, `TaskFilter`).
   - Ensure strict validation using Pydantic v2 syntax.
   - Verification, README Update, Git Commit & Push.
-- [ ] 3.4 Initial Database Migration Generation
+- [x] 3.4 Initial Database Migration Generation
   - Generate first Alembic migration (`alembic revision --autogenerate -m "Initial schema: users and tasks"`).
   - Inspect generated migration file to ensure clean table creation scripts.
   - Verification, README Update, Git Commit & Push.
-- [ ] 3.5 Alembic Migration Execution & Verification
+- [x] 3.5 Alembic Migration Execution & Verification
   - Apply migration to Neon PostgreSQL (`alembic upgrade head`).
   - Verify schema structure directly in the database.
   - Verification, README Update, Git Commit & Push.
