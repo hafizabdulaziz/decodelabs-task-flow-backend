@@ -80,7 +80,7 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
 ---
 
 ## 🔒 PHASE 4: Authentication & Security Engine
-- [ ] 4.1 Argon2 Password Hashing Utility
+- [x] 4.1 Argon2 Password Hashing Utility
   - Implement `app/core/security.py` for password hashing and verification using `passlib` with `argon2`.
   - Write unit tests for password hashing and verification.
   - Verification, README Update, Git Commit & Push.
