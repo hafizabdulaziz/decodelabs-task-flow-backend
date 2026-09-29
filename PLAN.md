@@ -96,7 +96,7 @@ Objective: Build a production-grade, fully tested, secure, and deployment-ready 
   - Build dependency `get_current_user` to decode token, validate user existence in database, and return `UserModel`.
   - Add `get_current_active_user` check for inactive account guard.
   - Verification, README Update, Git Commit & Push.
-- [ ] 4.5 Authentication Security Unit Testing
+- [x] 4.5 Authentication Security Unit Testing
   - Write tests in `tests/test_security.py` covering invalid tokens, expired tokens, wrong passwords, and valid credentials.
   - Execute Pytest suite and ensure 100% pass rate.
   - Verification, README Update, Git Commit & Push.
