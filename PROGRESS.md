@@ -39,6 +39,13 @@ Last Updated: Wednesday, September 30, 2026
 - [x] 5.4 User Profile Update Endpoint (`PATCH /api/v1/users/me`)
 - [x] 5.5 Authentication Endpoints Testing (`tests/test_auth.py`)
 
+### 📋 Phase 6: Task Core CRUD Business Logic & API Endpoints (100% Completed)
+- [x] 6.1 Task Service & CRUD Operations (`app/api/v1/tasks.py`)
+- [x] 6.2 Create Task Endpoint (`POST /api/v1/tasks/`)
+- [x] 6.3 List Tasks & Get Single Task Endpoints (`GET /api/v1/tasks/`, `GET /api/v1/tasks/{task_id}`)
+- [x] 6.4 Update Task Endpoint (`PATCH /api/v1/tasks/{task_id}`)
+- [x] 6.5 Delete Task Endpoint (`DELETE /api/v1/tasks/{task_id}`) & Automated Testing (`tests/test_tasks.py`)
+
 ---
 ## 📌 Next Steps:
-1. Proceed to Phase 6 (Task Core CRUD Business Logic & API Endpoints).
+1. Proceed to Phase 7 (Advanced Filtering, Pagination, Search & Sorting).
