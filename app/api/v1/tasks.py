@@ -5,7 +5,7 @@ Tasks API router for task CRUD operations.
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, or_
 
 from app.db.session import get_db
 from app.models.user import UserModel
@@ -45,11 +45,12 @@ async def list_tasks(
     limit: int = 100,
     status_filter: TaskStatus | None = None,
     priority: TaskPriority | None = None,
+    q: str | None = None,
     current_user: UserModel = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[TaskModel]:
     """
-    List all tasks belonging to the currently authenticated user with pagination and optional filtering (status, priority).
+    List all tasks belonging to the currently authenticated user with pagination, filtering, and keyword search.
     """
     query = select(TaskModel).where(TaskModel.owner_id == current_user.id)
 
@@ -57,6 +58,14 @@ async def list_tasks(
         query = query.where(TaskModel.status == status_filter)
     if priority is not None:
         query = query.where(TaskModel.priority == priority)
+    if q is not None:
+        search_term = f"%{q}%"
+        query = query.where(
+            or_(
+                TaskModel.title.ilike(search_term),
+                TaskModel.description.ilike(search_term),
+            )
+        )
 
     query = query.order_by(TaskModel.created_at.desc()).offset(skip).limit(limit)
 
