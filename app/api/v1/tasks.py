@@ -46,11 +46,13 @@ async def list_tasks(
     status_filter: TaskStatus | None = None,
     priority: TaskPriority | None = None,
     q: str | None = None,
+    sort_by: str = "created_at",
+    order: str = "desc",
     current_user: UserModel = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[TaskModel]:
     """
-    List all tasks belonging to the currently authenticated user with pagination, filtering, and keyword search.
+    List all tasks belonging to the currently authenticated user with pagination, filtering, search, and sorting.
     """
     query = select(TaskModel).where(TaskModel.owner_id == current_user.id)
 
@@ -67,7 +69,14 @@ async def list_tasks(
             )
         )
 
-    query = query.order_by(TaskModel.created_at.desc()).offset(skip).limit(limit)
+    # Sorting
+    sort_column = getattr(TaskModel, sort_by, TaskModel.created_at)
+    if order.lower() == "asc":
+        query = query.order_by(sort_column.asc())
+    else:
+        query = query.order_by(sort_column.desc())
+
+    query = query.offset(skip).limit(limit)
 
     result = await db.execute(query)
     tasks = result.scalars().all()
