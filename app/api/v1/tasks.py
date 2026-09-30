@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.db.session import get_db
 from app.models.user import UserModel
-from app.models.task import TaskModel
+from app.models.task import TaskModel, TaskStatus, TaskPriority
 from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
 from app.core.deps import get_current_active_user
 
@@ -43,19 +43,24 @@ async def create_task(
 async def list_tasks(
     skip: int = 0,
     limit: int = 100,
+    status_filter: TaskStatus | None = None,
+    priority: TaskPriority | None = None,
     current_user: UserModel = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[TaskModel]:
     """
-    List all tasks belonging to the currently authenticated user with pagination (skip, limit).
+    List all tasks belonging to the currently authenticated user with pagination and optional filtering (status, priority).
     """
-    result = await db.execute(
-        select(TaskModel)
-        .where(TaskModel.owner_id == current_user.id)
-        .order_by(TaskModel.created_at.desc())
-        .offset(skip)
-        .limit(limit)
-    )
+    query = select(TaskModel).where(TaskModel.owner_id == current_user.id)
+
+    if status_filter is not None:
+        query = query.where(TaskModel.status == status_filter)
+    if priority is not None:
+        query = query.where(TaskModel.priority == priority)
+
+    query = query.order_by(TaskModel.created_at.desc()).offset(skip).limit(limit)
+
+    result = await db.execute(query)
     tasks = result.scalars().all()
     return list(tasks)
 
