@@ -29,3 +29,8 @@ class TimestampMixin:
         onupdate=func.now(),
         nullable=False,
     )
+
+
+# Import model modules to ensure they are registered with Base.metadata
+import app.models.user
+import app.models.task
