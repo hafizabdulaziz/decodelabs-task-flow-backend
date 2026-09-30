@@ -41,14 +41,20 @@ async def create_task(
 
 @router.get("/", response_model=List[TaskResponse])
 async def list_tasks(
+    skip: int = 0,
+    limit: int = 100,
     current_user: UserModel = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[TaskModel]:
     """
-    List all tasks belonging to the currently authenticated user.
+    List all tasks belonging to the currently authenticated user with pagination (skip, limit).
     """
     result = await db.execute(
-        select(TaskModel).where(TaskModel.owner_id == current_user.id).order_by(TaskModel.created_at.desc())
+        select(TaskModel)
+        .where(TaskModel.owner_id == current_user.id)
+        .order_by(TaskModel.created_at.desc())
+        .offset(skip)
+        .limit(limit)
     )
     tasks = result.scalars().all()
     return list(tasks)
