@@ -48,7 +48,14 @@ async def register_user(
     return new_user
 
 
-@router.post("/login")
+@router.post(
+    "/login",
+    responses={
+        200: {"description": "Successful Authentication - Returns JWT Bearer Token"},
+        401: {"description": "Unauthorized - Incorrect email or password"},
+        422: {"description": "Unprocessable Entity - Invalid grant_type or validation error"},
+    },
+)
 async def login_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
