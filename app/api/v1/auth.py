@@ -55,7 +55,14 @@ async def login_access_token(
 ):
     """
     OAuth2 compatible login endpoint, returning a JWT access token upon successful authentication.
+    Supports standard OAuth2 password grant type with form-data parameters (`username`, `password`, `grant_type`).
     """
+    if form_data.grant_type and form_data.grant_type != "password":
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid grant_type. Expected 'password'.",
+        )
+
     result = await db.execute(select(UserModel).where(UserModel.email == form_data.username))
     user = result.scalars().first()
 
