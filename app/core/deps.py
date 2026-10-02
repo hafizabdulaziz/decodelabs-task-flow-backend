@@ -2,7 +2,6 @@
 FastAPI dependencies for authentication, database session injection, and current user verification.
 """
 
-from typing import AsyncGenerator
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
