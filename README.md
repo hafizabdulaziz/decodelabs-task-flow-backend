@@ -81,6 +81,19 @@ uvicorn app.main:app --reload
 
 ---
 
+## 🔑 Authentication & Swagger UI Guide
+To test authentication and execute requests via Swagger UI (`http://127.0.0.1:8000/docs`):
+1. Navigate to `POST /api/v1/auth/login` in the Swagger UI.
+2. Click **Try it out** and fill in the OAuth2 form fields:
+   - **`grant_type`**: Must strictly be `password`.
+   - **`username`**: Enter your registered user email address (e.g., `user@example.com`).
+   - **`password`**: Enter your user password.
+   - **`client_id` / `client_secret` / `scope`**: Leave empty or default.
+3. Click **Execute** to receive your JWT Access Token.
+4. Click the **Authorize** button at the top of Swagger UI and paste your token to authenticate protected endpoints (`/users/me`, `/tasks/`, etc.).
+
+---
+
 ## 🧪 Testing & Code Quality Checks
 - **Run Tests (Zero Warnings):**
   ```bash
