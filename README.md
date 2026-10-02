@@ -82,15 +82,20 @@ uvicorn app.main:app --reload
 ---
 
 ## 🔑 Authentication & Swagger UI Guide
-To test authentication and execute requests via Swagger UI (`http://127.0.0.1:8000/docs`):
-1. Navigate to `POST /api/v1/auth/login` in the Swagger UI.
-2. Click **Try it out** and fill in the OAuth2 form fields:
-   - **`grant_type`**: Must strictly be `password`.
-   - **`username`**: Enter your registered user email address (e.g., `user@example.com`).
-   - **`password`**: Enter your user password.
-   - **`client_id` / `client_secret` / `scope`**: Leave empty or default.
-3. Click **Execute** to receive your JWT Access Token.
-4. Click the **Authorize** button at the top of Swagger UI and paste your token to authenticate protected endpoints (`/users/me`, `/tasks/`, etc.).
+To test authentication and execute requests via Swagger UI (`http://127.0.0.1:8000/docs`) or API clients:
+1. **Login Endpoint (`POST /api/v1/auth/login`)**: Send a clean JSON payload containing `email` and `password`.
+   ```bash
+   curl -X 'POST' \
+     'http://127.0.0.1:8000/api/v1/auth/login' \
+     -H 'accept: application/json' \
+     -H 'Content-Type: application/json' \
+     -d '{
+       "email": "user@example.com",
+       "password": "SecurePassword123!"
+     }'
+   ```
+2. Receive the JWT `access_token` in response.
+3. Click the **Authorize** button at the top of Swagger UI (or pass `-H "Authorization: Bearer <token>"` in cURL) to authenticate protected endpoints (`/users/me`, `/tasks/`, etc.).
 
 ---
 
