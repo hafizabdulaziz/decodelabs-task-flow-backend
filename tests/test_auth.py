@@ -57,8 +57,8 @@ async def test_login_and_get_profile():
         # Login user
         login_resp = await ac.post(
             "/api/v1/auth/login",
-            data={
-                "username": user_payload["email"],
+            json={
+                "email": user_payload["email"],
                 "password": user_payload["password"],
             },
         )
@@ -88,25 +88,17 @@ async def test_login_and_get_profile():
 
 
 @pytest.mark.anyio
-async def test_login_invalid_grant_type():
-    user_payload = {
-        "email": "david@decodelabs.com",
-        "password": "SecurePassword123!",
-        "full_name": "David Bowie",
-    }
+async def test_login_validation_error():
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        reg_resp = await ac.post("/api/v1/auth/register", json=user_payload)
-        assert reg_resp.status_code == 201
-
         login_resp = await ac.post(
             "/api/v1/auth/login",
-            data={
-                "username": user_payload["email"],
-                "password": user_payload["password"],
-                "grant_type": "invalid_grant",
+            json={
+                "email": "not-an-email",
+                "password": "somepassword",
             },
         )
         assert login_resp.status_code == 422
         errors = login_resp.json()["detail"]
-        assert any(err["loc"] == ["body", "grant_type"] for err in errors)
+        assert any("email" in str(err["loc"]) for err in errors)
+
 
