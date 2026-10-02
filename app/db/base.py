@@ -32,5 +32,5 @@ class TimestampMixin:
 
 
 # Import model modules to ensure they are registered with Base.metadata
-import app.models.user
-import app.models.task
+import app.models.user  # noqa: E402, F401
+import app.models.task  # noqa: E402, F401
