@@ -18,8 +18,8 @@ async def get_auth_header(ac: AsyncClient, email: str = "taskuser@decodelabs.com
     )
     login_resp = await ac.post(
         "/api/v1/auth/login",
-        json={
-            "email": email,
+        data={
+            "username": email,
             "password": "SecurePassword123!",
         },
     )
