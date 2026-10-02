@@ -10,7 +10,7 @@ from sqlalchemy import select, or_
 from app.db.session import get_db
 from app.models.user import UserModel
 from app.models.task import TaskModel, TaskStatus, TaskPriority
-from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate
+from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate, TaskSortField
 from app.core.deps import get_current_active_user
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
@@ -46,13 +46,13 @@ async def list_tasks(
     status_filter: TaskStatus | None = None,
     priority: TaskPriority | None = None,
     q: str | None = None,
-    sort_by: str = "created_at",
+    sort_by: TaskSortField = TaskSortField.CREATED_AT,
     order: str = "desc",
     current_user: UserModel = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ) -> List[TaskModel]:
     """
-    List all tasks belonging to the currently authenticated user with pagination, filtering, search, and sorting.
+    List all tasks belonging to the currently authenticated user with pagination, filtering, case-insensitive search, and strict enum sorting.
     """
     query = select(TaskModel).where(TaskModel.owner_id == current_user.id)
 
@@ -60,8 +60,8 @@ async def list_tasks(
         query = query.where(TaskModel.status == status_filter)
     if priority is not None:
         query = query.where(TaskModel.priority == priority)
-    if q is not None:
-        search_term = f"%{q}%"
+    if q is not None and q.strip():
+        search_term = f"%{q.strip()}%"
         query = query.where(
             or_(
                 TaskModel.title.ilike(search_term),
@@ -69,8 +69,8 @@ async def list_tasks(
             )
         )
 
-    # Sorting
-    sort_column = getattr(TaskModel, sort_by, TaskModel.created_at)
+    # Strict Enum Sorting
+    sort_column = getattr(TaskModel, sort_by.value, TaskModel.created_at)
     if order.lower() == "asc":
         query = query.order_by(sort_column.asc())
     else:
@@ -134,14 +134,23 @@ async def update_task(
     return task
 
 
-@router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{task_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        204: {"description": "Task successfully deleted (Empty Body)"},
+        404: {"description": "Task not found"},
+    },
+    summary="Delete Task",
+    description="Delete a task by ID ensuring user ownership. Returns 204 No Content on success.",
+)
 async def delete_task(
     task_id: int,
     current_user: UserModel = Depends(get_current_active_user),
     db: AsyncSession = Depends(get_db),
 ) -> None:
     """
-    Delete a task by ID (ensuring ownership).
+    Delete a task by ID (ensuring ownership). Returns 204 No Content on success.
     """
     result = await db.execute(
         select(TaskModel).where(TaskModel.id == task_id, TaskModel.owner_id == current_user.id)
