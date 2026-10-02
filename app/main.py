@@ -2,17 +2,88 @@
 FastAPI application core entrypoint.
 """
 
-from fastapi import FastAPI
+import time
+import logging
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 from app.config import settings
 from app.api.v1.auth import router as auth_router
 from app.api.v1.users import router as users_router
 from app.api.v1.tasks import router as tasks_router
 
+logger = logging.getLogger("uvicorn.error")
+
 app = FastAPI(
-    title="Decodelabs Task Flow Backend",
+    title="Decodelabs Task Flow API",
     version="1.0.0",
-    description="Production-grade RESTful Task Management API",
+    description="Production-grade RESTful Task Management API built with FastAPI, Async SQLAlchemy, and PostgreSQL.",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
+
+# 8.2 CORS Middleware Configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+# 8.3 Request Logging & Processing Time Middleware
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers["X-Process-Time"] = f"{process_time:.4f}s"
+    logger.info(f"Method: {request.method} Path: {request.url.path} Status: {response.status_code} Duration: {process_time:.4f}s")
+    return response
+
+
+# 8.1 Custom Exception Handlers & Standardized API Response
+@app.exception_handler(StarletteHTTPException)
+async def custom_http_exception_handler(request: Request, exc: StarletteHTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "detail": exc.detail,
+            "code": "HTTP_ERROR",
+            "status_code": exc.status_code,
+        },
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "detail": exc.errors(),
+            "code": "VALIDATION_ERROR",
+            "status_code": status.HTTP_422_UNPROCESSABLE_ENTITY,
+        },
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled error: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            "detail": "Internal server error occurred.",
+            "code": "INTERNAL_SERVER_ERROR",
+            "status_code": status.HTTP_500_INTERNAL_SERVER_ERROR,
+        },
+    )
+
 
 # Include API routers
 app.include_router(auth_router, prefix="/api/v1")
