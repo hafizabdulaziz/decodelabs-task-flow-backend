@@ -124,3 +124,31 @@ async def test_task_filtering_pagination_search_sorting():
         sorted_tasks = sort_resp.json()
         assert sorted_tasks[0]["title"] == "Alpha Task"
         assert sorted_tasks[1]["title"] == "Beta Task"
+
+
+@pytest.mark.anyio
+async def test_case_insensitive_status_and_search():
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+        headers = await get_auth_header(ac, email="statususer@decodelabs.com")
+
+        # Create task with case-insensitive / spaced status ("In Progress")
+        create_resp = await ac.post(
+            "/api/v1/tasks/",
+            headers=headers,
+            json={
+                "title": "Case Test Task",
+                "description": "Testing case-insensitive status and search features",
+                "status": "In progress",
+                "priority": "HIGH",
+            },
+        )
+        assert create_resp.status_code == 201
+        data = create_resp.json()
+        assert data["status"] == "in_progress"
+
+        # Test case-insensitive search (q=testing CASE)
+        search_resp = await ac.get("/api/v1/tasks/?q=TESTING case", headers=headers)
+        assert search_resp.status_code == 200
+        search_results = search_resp.json()
+        assert len(search_results) == 1
+        assert search_results[0]["title"] == "Case Test Task"
