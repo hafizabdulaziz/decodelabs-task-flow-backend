@@ -43,3 +43,12 @@ class UserResponse(UserBase):
     model_config = {
         "from_attributes": True
     }
+
+
+class LoginRequest(BaseModel):
+    """
+    Schema for user JSON login credentials.
+    """
+    email: EmailStr
+    password: str = Field(..., min_length=1, max_length=128)
+

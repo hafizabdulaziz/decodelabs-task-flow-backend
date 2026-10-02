@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.db.session import get_db
 from app.models.user import UserModel
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import UserCreate, UserResponse, LoginRequest
 from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token
 
@@ -53,27 +53,21 @@ async def register_user(
     responses={
         200: {"description": "Successful Authentication - Returns JWT Bearer Token"},
         401: {"description": "Unauthorized - Incorrect email or password"},
-        422: {"description": "Unprocessable Entity - Invalid grant_type or validation error"},
+        422: {"description": "Unprocessable Entity - Validation error"},
     },
 )
 async def login_access_token(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    payload: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ):
     """
-    OAuth2 compatible login endpoint, returning a JWT access token upon successful authentication.
-    Supports standard OAuth2 password grant type with form-data parameters (`username`, `password`, `grant_type`).
+    JSON login endpoint, returning a JWT access token upon successful authentication.
+    Accepts JSON body with `email` and `password`.
     """
-    if form_data.grant_type and form_data.grant_type != "password":
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Invalid grant_type. Expected 'password'.",
-        )
-
-    result = await db.execute(select(UserModel).where(UserModel.email == form_data.username))
+    result = await db.execute(select(UserModel).where(UserModel.email == payload.email))
     user = result.scalars().first()
 
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    if not user or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
