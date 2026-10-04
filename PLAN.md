@@ -46,7 +46,7 @@
 - [x] **Part 8.2:** Add interactive Rate Limiting status bar indicator (`X-RateLimit` headers visualizer). (`ui(rate-limit): display rate limit quotas dynamically per route execution`)
 - [x] **Part 8.3:** Integrate custom API Error Diagnostic tool for 4xx/5xx responses with helpful hints. (`feat(diagnostics): build smart error diagnostic panel for API debugging`)
 
-## Phase 9: Comprehensive Documentation & OpenAPI Tuning
+## Phase 9: Comprehensive Documentation & OpenAPI Tuning - 9.1 Metadata Update
 - [x] **Part 9.1:** Update OpenAPI metadata (Title, Description, Contact info, Tags) in FastAPI app definition. (`docs(openapi): update API metadata, tags, and production description`)
 - [x] **Part 9.2:** Embed custom Markdown documentation panel directly inside dashboard header. (`docs(dashboard): add embedded documentation guide for testing endpoints`)
 
