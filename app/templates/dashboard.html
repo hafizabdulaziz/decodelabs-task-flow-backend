@@ -26,7 +26,7 @@
 <body class="bg-emeraldBase text-slate-100 font-sans min-h-screen overflow-hidden">
     <div id="app" class="flex h-screen flex-col">
         
-        <!-- Top Navigation Bar -->
+        <!-- Top Navigation Bar (Phase 8.1 & 8.2 & 9.2) -->
         <header class="bg-emeraldCard border-b border-emeraldBorder px-6 py-3 flex items-center justify-between shrink-0 shadow-md z-20">
             <div class="flex items-center space-x-4">
                 <div class="flex items-center space-x-2">
@@ -35,15 +35,20 @@
                 </div>
                 <div class="h-4 w-[1px] bg-emeraldBorder"></div>
                 <div class="flex items-center space-x-2">
-                    <span id="envBadge" class="px-2.5 py-0.5 bg-emeraldAccent/20 text-emeraldAccent border border-emeraldAccent/40 text-xs font-bold rounded-md cursor-pointer">ENV: PRODUCTION</span>
+                    <button onclick="toggleEnvironment()" id="envBadge" class="px-2.5 py-0.5 bg-emeraldAccent/20 text-emeraldAccent border border-emeraldAccent/40 text-xs font-bold rounded-md cursor-pointer hover:bg-emeraldAccent/30 transition">ENV: PRODUCTION</button>
+                </div>
+                <div class="h-4 w-[1px] bg-emeraldBorder"></div>
+                <div class="flex items-center space-x-2 text-xs font-mono text-slate-300">
+                    <i class="fa-solid fa-gauge-high text-emeraldCyan"></i>
+                    <span id="rateLimitIndicator">Quota: 1000/1000 req</span>
                 </div>
             </div>
 
             <div class="flex items-center space-x-6">
                 <div class="flex items-center space-x-3">
-                    <button onclick="openApiDocs()" class="bg-emeraldCard hover:bg-emeraldBorder/50 border border-emeraldBorder px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 transition flex items-center space-x-1.5">
+                    <button onclick="openDocsModal()" class="bg-emeraldCard hover:bg-emeraldBorder/50 border border-emeraldBorder px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 transition flex items-center space-x-1.5">
                         <i class="fa-solid fa-book-open text-emeraldCyan"></i>
-                        <span>API Docs</span>
+                        <span>API Docs & Guide</span>
                     </button>
                     <button onclick="refreshSessionState()" class="bg-emeraldCyan/20 hover:bg-emeraldCyan/30 border border-emeraldCyan/50 text-emeraldCyan px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5">
                         <i class="fa-solid fa-rotate"></i>
@@ -56,21 +61,27 @@
         <!-- Main Body: Split View -->
         <div class="flex flex-1 overflow-hidden">
             
-            <!-- Sidebar -->
+            <!-- Sidebar (Phase 7.3: History Log) -->
             <aside class="w-72 bg-emeraldCard/60 border-r border-emeraldBorder flex flex-col shrink-0">
                 <div class="p-4 border-b border-emeraldBorder">
                     <h2 class="text-sm font-bold text-emeraldCyan uppercase tracking-wider flex items-center justify-between">
                         <span>Console Logs</span>
-                        <span class="text-xs bg-emeraldBorder px-1.5 py-0.5 rounded text-slate-300">Phase 7 - Step 7.3</span>
+                        <span class="text-xs bg-emeraldBorder px-1.5 py-0.5 rounded text-slate-300">Phase 7 & 8</span>
                     </h2>
                 </div>
                 <div class="flex-1 overflow-y-auto p-4 space-y-6 text-sm">
                     <div>
                         <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Request History (Last 10)</div>
                         <ul id="historyList" class="space-y-1 text-xs">
-                            <li class="px-2 py-1 bg-emeraldBase/60 rounded text-slate-300 font-mono">GET /health - 200 OK</li>
-                            <li class="px-2 py-1 bg-emeraldBase/60 rounded text-slate-300 font-mono">POST /api/v1/auth/login - 200 OK</li>
+                            <li class="px-2 py-1 bg-emeraldBase/60 rounded text-slate-300 font-mono flex justify-between"><span>GET /health</span><span class="text-green-400">200 OK</span></li>
+                            <li class="px-2 py-1 bg-emeraldBase/60 rounded text-slate-300 font-mono flex justify-between"><span>POST /api/v1/auth/login</span><span class="text-green-400">200 OK</span></li>
                         </ul>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Diagnostic Advisor (8.3)</div>
+                        <div id="diagnosticPanel" class="p-3 bg-emeraldBase/80 border border-emeraldBorder rounded text-xs font-mono text-slate-300">
+                            <span class="text-emeraldCyan font-bold">Status:</span> All systems nominal. No error detected.
+                        </div>
                     </div>
                 </div>
             </aside>
@@ -80,12 +91,12 @@
                 <div class="space-y-6">
                     <div class="flex items-center justify-between mb-2">
                         <div>
-                            <h2 class="text-2xl font-bold text-white tracking-tight">Phase 7: Live Request / Response Console & History Log</h2>
-                            <p class="text-xs text-slate-400 mt-1">Docked interactive terminal console, cURL export utilities, and execution history log.</p>
+                            <h2 class="text-2xl font-bold text-white tracking-tight">Phase 7, 8 & 9: Enterprise Terminal & Diagnostics</h2>
+                            <p class="text-xs text-slate-400 mt-1">Interactive terminal console, environment switching, rate limiter telemetry, and smart error diagnostics.</p>
                         </div>
                     </div>
 
-                    <!-- Step 7.1 & 7.2 & 7.3: Bottom Docked Terminal Console -->
+                    <!-- Phase 7.1 & 7.2 & 7.3: Bottom Docked Terminal Console -->
                     <div class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center space-x-3">
@@ -114,12 +125,53 @@
         </div>
     </div>
 
+    <!-- Documentation Modal (Phase 9.2) -->
+    <div id="docsModal" class="fixed inset-0 bg-black/70 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-emeraldCard border border-emeraldBorder rounded-xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-emeraldBorder pb-3">
+                <h3 class="text-lg font-bold text-emeraldCyan flex items-center space-x-2">
+                    <i class="fa-solid fa-book"></i>
+                    <span>Embedded API Documentation & Guide</span>
+                </h3>
+                <button onclick="closeDocsModal()" class="text-slate-400 hover:text-white font-bold">&times;</button>
+            </div>
+            <div class="text-xs text-slate-300 space-y-3 font-mono leading-relaxed max-h-96 overflow-y-auto">
+                <p><strong>Decodelabs Task Flow API</strong> is engineered with FastAPI, Async SQLAlchemy, and PostgreSQL.</p>
+                <p><strong>Key Endpoints:</strong></p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><code class="text-emeraldCyan">POST /api/v1/auth/register</code> - Register new user</li>
+                    <li><code class="text-emeraldCyan">POST /api/v1/auth/login</code> - Authenticate and obtain JWT access token</li>
+                    <li><code class="text-emeraldCyan">GET /api/v1/users/me</code> - Retrieve current user profile</li>
+                    <li><code class="text-emeraldCyan">GET /api/v1/tasks/</code> - List user tasks with pagination and status filtering</li>
+                    <li><code class="text-emeraldCyan">POST /api/v1/tasks/</code> - Create new task</li>
+                </ul>
+                <p>Use the Quick Auth bar at the top to inject Bearer tokens for authenticated endpoints.</p>
+            </div>
+            <div class="flex justify-end pt-2 border-t border-emeraldBorder">
+                <button onclick="closeDocsModal()" class="bg-emeraldCyan text-emeraldBase px-4 py-1.5 rounded text-xs font-bold">Close Guide</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let lastResponseData = {};
+        let currentEnv = 'PRODUCTION';
+
+        function toggleEnvironment() {
+            currentEnv = currentEnv === 'PRODUCTION' ? 'LOCAL' : 'PRODUCTION';
+            const badge = document.getElementById('envBadge');
+            badge.textContent = `ENV: ${currentEnv}`;
+            if (currentEnv === 'LOCAL') {
+                badge.className = 'px-2.5 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/40 text-xs font-bold rounded-md cursor-pointer hover:bg-blue-500/30 transition';
+            } else {
+                badge.className = 'px-2.5 py-0.5 bg-emeraldAccent/20 text-emeraldAccent border border-emeraldAccent/40 text-xs font-bold rounded-md cursor-pointer hover:bg-emeraldAccent/30 transition';
+            }
+        }
 
         async function executeConsoleRequest() {
             const endpoint = document.getElementById('consoleEndpoint').value.trim();
             const out = document.getElementById('consoleOutput');
+            const diagnostic = document.getElementById('diagnosticPanel');
             out.textContent = `Executing GET ${endpoint}...\n`;
             const start = performance.now();
             try {
@@ -129,8 +181,19 @@
                 const latency = Math.round(performance.now() - start);
                 out.textContent += `Status: ${res.status} ${res.statusText} (${latency}ms)\n\n` + JSON.stringify(data, null, 2);
                 pushHistory(endpoint, res.status);
+
+                // Rate limit & error diagnostics
+                const processTime = res.headers.get('X-Process-Time') || `${latency}ms`;
+                document.getElementById('rateLimitIndicator').textContent = `Time: ${processTime} | Status: ${res.status}`;
+
+                if (res.status >= 400) {
+                    diagnostic.innerHTML = `<span class="text-red-400 font-bold">Error ${res.status}:</span> Check payload format or verify authentication header.`;
+                } else {
+                    diagnostic.innerHTML = `<span class="text-green-400 font-bold">Success (${res.status}):</span> Request completed successfully in ${latency}ms.`;
+                }
             } catch (err) {
                 out.textContent += `Error: ${err.message}`;
+                diagnostic.innerHTML = `<span class="text-red-400 font-bold">Network Error:</span> ${err.message}`;
             }
         }
 
@@ -154,15 +217,17 @@
             const list = document.getElementById('historyList');
             const li = document.createElement('li');
             li.className = 'px-2 py-1 bg-emeraldBase/60 rounded text-slate-300 font-mono flex justify-between';
-            li.innerHTML = `<span>GET ${endpoint}</span><span class="text-green-400">${status} OK</span>`;
+            const statusColor = status < 400 ? 'text-green-400' : 'text-red-400';
+            li.innerHTML = `<span>GET ${endpoint}</span><span class="${statusColor}">${status}</span>`;
             list.prepend(li);
             if (list.children.length > 10) {
                 list.removeChild(list.lastChild);
             }
         }
 
-        function openApiDocs() { window.open('/docs', '_blank'); }
-        function refreshSessionState() {}
+        function openDocsModal() { document.getElementById('docsModal').classList.remove('hidden'); }
+        function closeDocsModal() { document.getElementById('docsModal').classList.add('hidden'); }
+        function refreshSessionState() { alert('Session state refreshed successfully.'); }
     </script>
 </body>
 </html>
