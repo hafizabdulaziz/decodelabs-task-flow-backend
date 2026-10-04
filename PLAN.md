@@ -22,9 +22,9 @@
 - [x] **Part 3.3:** Auto-persist session tokens in browser state with 1-click token clear/refresh. (`feat(session): handle token persistence and session lifecycle management`)
 
 ## Phase 4: Endpoint UI Overhaul & Interactive Console
-- [ ] **Part 4.1:** Restructure Authentication Endpoints (`/register`, `/login`) with JSON Payload Builder. (`ui(auth-endpoints): redesign login and register payload test modules`)
-- [ ] **Part 4.2:** Restructure User Profile Endpoints (`/users/me`) with visual response visualizer. (`ui(user-endpoints): re-skin user profile and update interfaces`)
-- [ ] **Part 4.3:** Restructure Task Management Endpoints (`/tasks/`) with filter tags and priority badges. (`ui(task-endpoints): enhance task CRUD controllers with status indicators`)
+- [x] **Part 4.1:** Restructure Authentication Endpoints (`/register`, `/login`) with JSON Payload Builder. (`ui(auth-endpoints): redesign login and register payload test modules`)
+- [x] **Part 4.2:** Restructure User Profile Endpoints (`/users/me`) with visual response visualizer. (`ui(user-endpoints): re-skin user profile and update interfaces`)
+- [x] **Part 4.3:** Restructure Task Management Endpoints (`/tasks/`) with filter tags and priority badges. (`ui(task-endpoints): enhance task CRUD controllers with status indicators`)
 
 ## Phase 5: Real-Time API Metrics & Health Operations
 - [ ] **Part 5.1:** Integrate real-time Server Uptime and Latency widget inside `/health` tab. (`feat(metrics): add real-time health and uptime execution widget`)
