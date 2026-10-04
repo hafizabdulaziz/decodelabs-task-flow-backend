@@ -17,7 +17,7 @@
 - [x] **Part 2.3:** Apply glassmorphism styling (backdrop-blur, custom borders) to all endpoint cards. (`ui(cards): convert Swagger endpoint panels into glassmorphic cards`)
 
 ## Phase 3: Interactive Auth & Token Management Suite
-- [ ] **Part 3.1:** Create sticky top-tier Quick Auth Bar for Bearer JWT Injection. (`feat(auth-ui): create dedicated JWT quick-injection status panel`)
+- [x] **Part 3.1:** Create sticky top-tier Quick Auth Bar for Bearer JWT Injection. (`feat(auth-ui): create dedicated JWT quick-injection status panel`)
 - [ ] **Part 3.2:** Add visual Token Decoder & Inspector modal (JWT Header, Payload, Expiry counter). (`feat(token-inspector): add frontend JWT decode and expiration visualizer`)
 - [ ] **Part 3.3:** Auto-persist session tokens in browser state with 1-click token clear/refresh. (`feat(session): handle token persistence and session lifecycle management`)
 
