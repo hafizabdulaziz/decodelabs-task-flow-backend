@@ -15,16 +15,31 @@ from app.api.v1.auth import router as auth_router
 from app.api.v1.users import router as users_router
 from app.api.v1.tasks import router as tasks_router
 
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, JSONResponse
+
 logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI(
     title="Decodelabs Task Flow API",
     version="1.0.0",
     description="Production-grade RESTful Task Management API built with FastAPI, Async SQLAlchemy, and PostgreSQL.",
-    docs_url="/docs",
+    docs_url=None,
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+@app.get("/docs", include_in_schema=False)
+async def custom_api_control_center():
+    """
+    Custom Production API Control Center Dashboard.
+    """
+    with open("app/templates/dashboard.html", "r", encoding="utf-8") as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content)
 
 # 8.2 CORS Middleware Configuration
 app.add_middleware(

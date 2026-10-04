@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decodelabs Task Flow - API Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        emeraldBase: '#0B132B',
+                        emeraldCard: '#1C2541',
+                        emeraldBorder: '#3A506B',
+                        emeraldCyan: '#5BC0BE',
+                        emeraldAccent: '#FF9F1C',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body class="bg-emeraldBase text-slate-100 font-sans min-h-screen">
+    <div id="app" class="flex h-screen overflow-hidden">
+        <!-- Sidebar & Main Container placeholder -->
+        <div class="flex-1 flex flex-col">
+            <header class="bg-emeraldCard border-b border-emeraldBorder px-6 py-4 flex items-center justify-between">
+                <h1 class="text-xl font-bold text-emeraldCyan">Decodelabs Task Flow API Control Center</h1>
+                <span class="px-3 py-1 bg-emeraldAccent text-emeraldBase text-xs font-bold rounded">Production Ready</span>
+            </header>
+            <main class="flex-1 p-6 overflow-y-auto">
+                <div class="bg-emeraldCard border border-emeraldBorder rounded-lg p-6 shadow-lg">
+                    <h2 class="text-2xl font-semibold text-emeraldAccent mb-2">Welcome to API Control Center</h2>
+                    <p class="text-slate-300">Modular dashboard UI initialization and custom color theme config complete.</p>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+/* Custom styles for Decodelabs Task Flow API Control Center */
+body {
+    background-color: #0B132B;
+    color: #F8FAFC;
+}
+
+/* Glassmorphism effects */
+.glass-panel {
+    background: rgba(28, 37, 65, 0.75);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(58, 80, 107, 0.4);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0B132B;
+}
+::-webkit-scrollbar-thumb {
+    background: #3A506B;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #5BC0BE;
+}
