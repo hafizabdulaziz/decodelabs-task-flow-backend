@@ -1,14 +1,17 @@
 /* Custom styles for Decodelabs Task Flow API Control Center */
 body {
-    background-color: #0B132B;
-    color: #F8FAFC;
+    background-color: #0D0E11;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 /* Glassmorphism effects */
 .glass-panel {
-    background: rgba(28, 37, 65, 0.75);
+    background: rgba(26, 29, 36, 0.85);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(58, 80, 107, 0.4);
+    border: 1px solid rgba(42, 46, 59, 0.6);
 }
 
 /* Scrollbar styling */
@@ -17,12 +20,34 @@ body {
     height: 6px;
 }
 ::-webkit-scrollbar-track {
-    background: #0B132B;
+    background: #0D0E11;
 }
 ::-webkit-scrollbar-thumb {
-    background: #3A506B;
+    background: #2A2E3B;
     border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #5BC0BE;
+    background: #10B981;
+}
+
+/* Issue 2: Strict Layout & Scrolling Constraints */
+.app-layout {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.main-content {
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 2rem;
 }

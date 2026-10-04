@@ -170,7 +170,8 @@
                             <label class="text-[11px] font-semibold text-textMuted">JSON Payload</label>
                             <textarea id="regPayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-24 focus:outline-none focus:border-emeraldNeon">{
   "email": "user@example.com",
-  "password": "SecurePassword123!"
+  "password": "SecurePassword123!",
+  "full_name": "Test User"
 }</textarea>
                             <button onclick="testRegister()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2 rounded text-xs transition">Execute Register</button>
                         </div>
@@ -455,6 +456,24 @@
                 headers['Authorization'] = `Bearer ${token}`;
             }
             return headers;
+        }
+
+        async function fetchCurrentUser() {
+            const token = localStorage.getItem("access_token");
+            if (!token) {
+                return; // Abort request when unauthenticated to prevent 401 log spam
+            }
+
+            const response = await fetch("/api/v1/users/me", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (response.status === 401) {
+                localStorage.removeItem("access_token");
+            }
+            return response.json();
         }
 
         async function testRegister() {

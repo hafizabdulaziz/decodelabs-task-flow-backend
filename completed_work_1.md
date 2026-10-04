@@ -69,3 +69,11 @@
   - Restored full multi-section dashboard layout including Authentication Endpoints, User Management, Task CRUD, Pydantic Schema Viewer, Real-Time Analytics, and Interactive Terminal.
   - Enforced strict Charcoal & Emerald theme (`#0D0E11`, `#1A1D24`, `#2A2E3B`, `#10B981`, `#F59E0B`) adhering strictly to the NO-BLUE rule.
 - **Git Commit Hash & Message:** `fix(ui): restore missing endpoint sections and enforce emerald charcoal theme`
+
+## Comprehensive Code Refactoring & Bug Fixes (Issues 1, 2, 3)
+- **Date:** Sunday, October 4, 2026
+- **Completed Refactoring & Bug Fixes:**
+  - **Issue 1:** Added `full_name: "Test User"` property in frontend registration payload template to resolve null DB response issue.
+  - **Issue 2:** Standardized CSS layout rules (`.app-layout`, `.sidebar`, `.main-content`) with strict height constraints (`100vh`) and independent vertical scrolling.
+  - **Issue 3:** Implemented strict authentication guard in `fetchCurrentUser()` checking `localStorage` for `access_token` before executing requests to prevent 401 log spam.
+- **Git Commit Hash & Message:** `refactor(core): fix registration payload, layout constraints, and 401 poll guard`
