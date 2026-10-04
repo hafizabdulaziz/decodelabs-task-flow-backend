@@ -19,7 +19,7 @@
 ## Phase 3: Interactive Auth & Token Management Suite
 - [x] **Part 3.1:** Create sticky top-tier Quick Auth Bar for Bearer JWT Injection. (`feat(auth-ui): create dedicated JWT quick-injection status panel`)
 - [x] **Part 3.2:** Add visual Token Decoder & Inspector modal (JWT Header, Payload, Expiry counter). (`feat(token-inspector): add frontend JWT decode and expiration visualizer`)
-- [ ] **Part 3.3:** Auto-persist session tokens in browser state with 1-click token clear/refresh. (`feat(session): handle token persistence and session lifecycle management`)
+- [x] **Part 3.3:** Auto-persist session tokens in browser state with 1-click token clear/refresh. (`feat(session): handle token persistence and session lifecycle management`)
 
 ## Phase 4: Endpoint UI Overhaul & Interactive Console
 - [ ] **Part 4.1:** Restructure Authentication Endpoints (`/register`, `/login`) with JSON Payload Builder. (`ui(auth-endpoints): redesign login and register payload test modules`)

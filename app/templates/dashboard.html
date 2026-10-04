@@ -35,17 +35,17 @@
                 </div>
                 <div class="h-4 w-[1px] bg-emeraldBorder"></div>
                 <div class="flex items-center space-x-2">
-                    <span class="px-2.5 py-0.5 bg-emeraldAccent/20 text-emeraldAccent border border-emeraldAccent/40 text-xs font-bold rounded-md">ENV: PRODUCTION</span>
+                    <span id="envBadge" class="px-2.5 py-0.5 bg-emeraldAccent/20 text-emeraldAccent border border-emeraldAccent/40 text-xs font-bold rounded-md cursor-pointer" onclick="toggleEnvironment()">ENV: PRODUCTION</span>
                 </div>
             </div>
 
             <div class="flex items-center space-x-6">
                 <div class="relative">
-                    <input type="text" placeholder="Search endpoints or schemas (Ctrl+K)..." class="bg-emeraldBase/80 border border-emeraldBorder text-xs rounded-lg px-4 py-2 pl-9 w-72 text-slate-200 focus:outline-none focus:border-emeraldCyan">
+                    <input type="text" id="endpointSearch" oninput="filterEndpoints()" placeholder="Search endpoints or schemas (Ctrl+K)..." class="bg-emeraldBase/80 border border-emeraldBorder text-xs rounded-lg px-4 py-2 pl-9 w-72 text-slate-200 focus:outline-none focus:border-emeraldCyan">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <button class="bg-emeraldCard hover:bg-emeraldBorder/50 border border-emeraldBorder px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 transition flex items-center space-x-1.5">
+                    <button onclick="openApiDocs()" class="bg-emeraldCard hover:bg-emeraldBorder/50 border border-emeraldBorder px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 transition flex items-center space-x-1.5">
                         <i class="fa-solid fa-book-open text-emeraldCyan"></i>
                         <span>API Docs</span>
                     </button>
@@ -57,7 +57,7 @@
             </div>
         </header>
 
-        <!-- Quick Auth Bar & Session Lifecycle -->
+        <!-- Quick Auth Bar -->
         <div id="quickAuthBar" class="bg-emeraldCard/90 border-b border-emeraldBorder px-6 py-2.5 flex items-center justify-between shrink-0 backdrop-blur-md">
             <div class="flex items-center space-x-3 w-full max-w-4xl">
                 <div class="flex items-center space-x-2 text-emeraldCyan text-xs font-semibold">
@@ -88,117 +88,307 @@
                         <span class="text-xs bg-emeraldBorder px-1.5 py-0.5 rounded text-slate-300">v1.0</span>
                     </h2>
                 </div>
-                <div class="flex-1 overflow-y-auto p-4 space-y-6 text-sm">
+                <div id="sidebarDirectory" class="flex-1 overflow-y-auto p-4 space-y-6 text-sm">
                     <div>
                         <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
-                            <span>Authentication & Session</span>
-                            <span class="text-emeraldCyan">Active</span>
+                            <span>Authentication</span>
+                            <span class="text-emeraldCyan">2</span>
                         </div>
                         <ul class="space-y-1">
-                            <li>
-                                <a href="#auth-login" class="flex items-center justify-between px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white">
-                                    <span class="truncate"><span class="text-emeraldAccent font-mono text-xs mr-2 font-bold">POST</span>/api/v1/auth/login</span>
-                                </a>
-                            </li>
+                            <li><a href="#auth-login" class="flex items-center justify-between px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white"><span class="truncate"><span class="text-emeraldAccent font-mono text-xs mr-2 font-bold">POST</span>/api/v1/auth/login</span></a></li>
+                            <li><a href="#auth-register" class="flex items-center justify-between px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white"><span class="truncate"><span class="text-emeraldAccent font-mono text-xs mr-2 font-bold">POST</span>/api/v1/auth/register</span></a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                            <span>Users</span>
+                            <span class="text-emeraldCyan">1</span>
+                        </div>
+                        <ul class="space-y-1">
+                            <li><a href="#user-me" class="flex items-center justify-between px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white"><span class="truncate"><span class="text-blue-400 font-mono text-xs mr-2 font-bold">GET</span>/api/v1/users/me</span></a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                            <span>Tasks</span>
+                            <span class="text-emeraldCyan">4</span>
+                        </div>
+                        <ul class="space-y-1">
+                            <li><a href="#tasks-list" class="flex items-center justify-between px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white"><span class="truncate"><span class="text-blue-400 font-mono text-xs mr-2 font-bold">GET</span>/api/v1/tasks/</span></a></li>
+                            <li><a href="#tasks-create" class="flex items-center justify-between px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white"><span class="truncate"><span class="text-emeraldAccent font-mono text-xs mr-2 font-bold">POST</span>/api/v1/tasks/</span></a></li>
                         </ul>
                     </div>
                 </div>
             </aside>
 
-            <!-- Main Content Area: Phase 3.3 Session Management & Token Inspector -->
-            <main class="flex-1 overflow-y-auto p-8 space-y-6">
-                <div class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold text-white flex items-center space-x-2">
-                            <i class="fa-solid fa-database text-emeraldCyan"></i>
-                            <span>Session Lifecycle & Token State Manager</span>
-                        </h2>
-                        <span class="text-xs text-emeraldAccent bg-emeraldAccent/10 px-2.5 py-1 rounded border border-emeraldAccent/30">Auto-Persisted</span>
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto p-8 space-y-8">
+                <div class="flex items-center justify-between mb-2">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white tracking-tight">Phase 4: Endpoint UI Overhaul & Interactive Console</h2>
+                        <p class="text-xs text-slate-400 mt-1">Full interactive JSON payload builders, response visualizers, and task CRUD controllers.</p>
                     </div>
-                    <p class="text-xs text-slate-300 mb-6">Tokens are securely persisted in browser `localStorage` with 1-click lifecycle refresh and clearing.</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-emeraldBase/70 border border-emeraldBorder rounded-lg p-4">
-                            <h3 class="text-xs font-bold text-emeraldCyan uppercase tracking-wider mb-2">Decoded Active Payload</h3>
-                            <pre id="decodedPayloadBox" class="text-xs font-mono text-slate-300 bg-emeraldCard p-3 rounded border border-emeraldBorder overflow-x-auto h-48">{
-  "sub": "unauthenticated",
-  "exp": 0
-}</pre>
+                </div>
+
+                <!-- Auth Register -->
+                <div id="auth-register" class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-1 bg-emeraldAccent text-emeraldBase text-xs font-extrabold rounded font-mono">POST</span>
+                            <span class="text-base font-mono font-semibold text-white">/api/v1/auth/register</span>
                         </div>
-                        <div class="bg-emeraldBase/70 border border-emeraldBorder rounded-lg p-4 flex flex-col justify-between">
-                            <div>
-                                <h3 class="text-xs font-bold text-emeraldAccent uppercase tracking-wider mb-2">Session Telemetry</h3>
-                                <div class="space-y-3 text-xs text-slate-300">
-                                    <div class="flex justify-between py-1 border-b border-emeraldBorder/50">
-                                        <span>Storage State:</span>
-                                        <span id="storageState" class="font-mono text-emeraldCyan">localStorage (Active)</span>
-                                    </div>
-                                    <div class="flex justify-between py-1 border-b border-emeraldBorder/50">
-                                        <span>Lifecycle Status:</span>
-                                        <span id="sessionLifecycle" class="font-mono text-green-400">Ready</span>
-                                    </div>
-                                    <div class="flex justify-between py-1">
-                                        <span>Time to Expiry:</span>
-                                        <span id="tokenExpiryTimer" class="font-mono text-amber-400 font-bold">N/A</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex space-x-2 mt-4">
-                                <button onclick="refreshSessionState()" class="flex-1 bg-emeraldCyan hover:bg-emeraldCyan/90 text-emeraldBase py-2 rounded text-xs font-bold transition shadow">
-                                    Refresh Session
-                                </button>
-                                <button onclick="clearAuthToken()" class="px-4 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 py-2 rounded text-xs font-bold transition">
-                                    Clear
-                                </button>
-                            </div>
+                        <span class="text-xs text-slate-400 bg-emeraldBase/60 px-2.5 py-1 rounded border border-emeraldBorder">Authentication</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-emeraldCyan uppercase tracking-wider mb-2">JSON Request Payload</label>
+                            <textarea id="registerPayload" rows="4" class="w-full bg-emeraldBase border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-emeraldCyan">{
+  "email": "user@decodelabs.ai",
+  "password": "SecurePassword123!",
+  "full_name": "Abdul Aziz"
+}</textarea>
+                            <button onclick="testRegister()" class="mt-3 bg-emeraldCyan hover:bg-emeraldCyan/90 text-emeraldBase px-4 py-2 rounded text-xs font-bold transition shadow">Execute Register</button>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emeraldAccent uppercase tracking-wider mb-2">Response Output</label>
+                            <pre id="registerResponse" class="bg-emeraldBase/80 border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-300 h-32 overflow-x-auto">// Response output...</pre>
                         </div>
                     </div>
                 </div>
+
+                <!-- Auth Login -->
+                <div id="auth-login" class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-1 bg-emeraldAccent text-emeraldBase text-xs font-extrabold rounded font-mono">POST</span>
+                            <span class="text-base font-mono font-semibold text-white">/api/v1/auth/login</span>
+                        </div>
+                        <span class="text-xs text-slate-400 bg-emeraldBase/60 px-2.5 py-1 rounded border border-emeraldBorder">Authentication</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-emeraldCyan uppercase tracking-wider mb-2">Form / JSON Payload</label>
+                            <textarea id="loginPayload" rows="4" class="w-full bg-emeraldBase border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-emeraldCyan">{
+  "username": "user@decodelabs.ai",
+  "password": "SecurePassword123!"
+}</textarea>
+                            <button onclick="testLogin()" class="mt-3 bg-emeraldCyan hover:bg-emeraldCyan/90 text-emeraldBase px-4 py-2 rounded text-xs font-bold transition shadow">Execute Login & Auto-Inject Token</button>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emeraldAccent uppercase tracking-wider mb-2">Response Output</label>
+                            <pre id="loginResponse" class="bg-emeraldBase/80 border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-300 h-32 overflow-x-auto">// Response output...</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Profile /users/me -->
+                <div id="user-me" class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-1 bg-blue-500 text-white text-xs font-extrabold rounded font-mono">GET</span>
+                            <span class="text-base font-mono font-semibold text-white">/api/v1/users/me</span>
+                        </div>
+                        <span class="text-xs text-slate-400 bg-emeraldBase/60 px-2.5 py-1 rounded border border-emeraldBorder">User Profile</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-xs text-slate-300 mb-4">Fetch currently authenticated user profile details using Bearer token.</p>
+                            <button onclick="testGetUserMe()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-xs font-bold transition shadow">Execute Get /users/me</button>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emeraldAccent uppercase tracking-wider mb-2">Response Output</label>
+                            <pre id="userMeResponse" class="bg-emeraldBase/80 border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-300 h-32 overflow-x-auto">// Response output...</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task Management /tasks/ -->
+                <div id="tasks-list" class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-1 bg-blue-500 text-white text-xs font-extrabold rounded font-mono">GET</span>
+                            <span class="text-base font-mono font-semibold text-white">/api/v1/tasks/</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 rounded bg-emeraldCyan/20 text-emeraldCyan text-xs font-semibold">Priority Tags</span>
+                            <span class="text-xs text-slate-400 bg-emeraldBase/60 px-2.5 py-1 rounded border border-emeraldBorder">Tasks</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-xs text-slate-300 mb-4">List all tasks associated with the authenticated user with optional status and priority filtering.</p>
+                            <div class="flex space-x-2 mb-3">
+                                <input type="text" id="taskFilterStatus" placeholder="Filter by status (e.g. pending)" class="bg-emeraldBase border border-emeraldBorder rounded px-3 py-1.5 text-xs text-slate-200 flex-1">
+                                <button onclick="testGetTasks()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded text-xs font-bold transition shadow">Fetch Tasks</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emeraldAccent uppercase tracking-wider mb-2">Tasks JSON Response</label>
+                            <pre id="tasksResponse" class="bg-emeraldBase/80 border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-300 h-32 overflow-x-auto">// Response output...</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Task /tasks/ -->
+                <div id="tasks-create" class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-1 bg-emeraldAccent text-emeraldBase text-xs font-extrabold rounded font-mono">POST</span>
+                            <span class="text-base font-mono font-semibold text-white">/api/v1/tasks/</span>
+                        </div>
+                        <span class="text-xs text-slate-400 bg-emeraldBase/60 px-2.5 py-1 rounded border border-emeraldBorder">Tasks</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-emeraldCyan uppercase tracking-wider mb-2">Task JSON Payload</label>
+                            <textarea id="createTaskPayload" rows="4" class="w-full bg-emeraldBase border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-200 focus:outline-none focus:border-emeraldCyan">{
+  "title": "Complete Control Center UI",
+  "description": "Build high-end Decodelabs control center dashboard",
+  "status": "pending",
+  "priority": "high"
+}</textarea>
+                            <button onclick="testCreateTask()" class="mt-3 bg-emeraldCyan hover:bg-emeraldCyan/90 text-emeraldBase px-4 py-2 rounded text-xs font-bold transition shadow">Create Task</button>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-emeraldAccent uppercase tracking-wider mb-2">Response Output</label>
+                            <pre id="createTaskResponse" class="bg-emeraldBase/80 border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-300 h-32 overflow-x-auto">// Response output...</pre>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
+
     <script>
+        let currentEnv = 'PRODUCTION';
+        function toggleEnvironment() {
+            currentEnv = currentEnv === 'PRODUCTION' ? 'LOCAL' : 'PRODUCTION';
+            const badge = document.getElementById('envBadge');
+            badge.textContent = `ENV: ${currentEnv}`;
+            badge.className = currentEnv === 'PRODUCTION' 
+                ? 'px-2.5 py-0.5 bg-emeraldAccent/20 text-emeraldAccent border border-emeraldAccent/40 text-xs font-bold rounded-md cursor-pointer'
+                : 'px-2.5 py-0.5 bg-purple-500/20 text-purple-400 border border-purple-500/40 text-xs font-bold rounded-md cursor-pointer';
+        }
+
+        function filterEndpoints() {
+            const query = document.getElementById('endpointSearch').value.toLowerCase();
+            // simple visual filter simulation
+        }
+
+        function openApiDocs() {
+            window.open('/docs', '_blank');
+        }
+
+        async function testRegister() {
+            const payload = document.getElementById('registerPayload').value;
+            try {
+                const res = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: payload
+                });
+                const data = await res.json();
+                document.getElementById('registerResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('registerResponse').textContent = 'Error: ' + err.message;
+            }
+        }
+
+        async function testLogin() {
+            const payload = document.getElementById('loginPayload').value;
+            try {
+                const parsed = JSON.parse(payload);
+                const formData = new URLSearchParams();
+                formData.append('username', parsed.username);
+                formData.append('password', parsed.password);
+
+                const res = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: formData
+                });
+                const data = await res.json();
+                document.getElementById('loginResponse').textContent = JSON.stringify(data, null, 2);
+                if (data.access_token) {
+                    document.getElementById('jwtTokenInput').value = data.access_token;
+                    saveAuthToken();
+                }
+            } catch (err) {
+                document.getElementById('loginResponse').textContent = 'Error: ' + err.message;
+            }
+        }
+
+        async function testGetUserMe() {
+            const token = document.getElementById('jwtTokenInput').value.trim();
+            try {
+                const res = await fetch('/api/v1/users/me', {
+                    method: 'GET',
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
+                const data = await res.json();
+                document.getElementById('userMeResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('userMeResponse').textContent = 'Error: ' + err.message;
+            }
+        }
+
+        async function testGetTasks() {
+            const token = document.getElementById('jwtTokenInput').value.trim();
+            const status = document.getElementById('taskFilterStatus').value.trim();
+            let url = '/api/v1/tasks/';
+            if (status) url += `?status=${encodeURIComponent(status)}`;
+            try {
+                const res = await fetch(url, {
+                    method: 'GET',
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
+                const data = await res.json();
+                document.getElementById('tasksResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('tasksResponse').textContent = 'Error: ' + err.message;
+            }
+        }
+
+        async function testCreateTask() {
+            const token = document.getElementById('jwtTokenInput').value.trim();
+            const payload = document.getElementById('createTaskPayload').value;
+            try {
+                const res = await fetch('/api/v1/tasks/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: payload
+                });
+                const data = await res.json();
+                document.getElementById('createTaskResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (err) {
+                document.getElementById('createTaskResponse').textContent = 'Error: ' + err.message;
+            }
+        }
+
         function saveAuthToken() {
             const token = document.getElementById('jwtTokenInput').value.trim();
             if (token) {
                 localStorage.setItem('taskflow_jwt', token);
                 updateAuthUI(true);
-                inspectToken();
             }
         }
         function clearAuthToken() {
             document.getElementById('jwtTokenInput').value = '';
             localStorage.removeItem('taskflow_jwt');
             updateAuthUI(false);
-            document.getElementById('decodedPayloadBox').textContent = '{\n  "sub": "unauthenticated",\n  "exp": 0\n}';
-            document.getElementById('tokenExpiryTimer').textContent = 'N/A';
-            document.getElementById('sessionLifecycle').textContent = 'Cleared';
         }
         function updateAuthUI(isAuthenticated) {
             const badge = document.getElementById('authStatusBadge');
             if (isAuthenticated) {
                 badge.textContent = 'Authenticated';
                 badge.className = 'px-2 py-0.5 rounded bg-green-500/20 text-green-400 border border-green-500/40 font-semibold';
-                document.getElementById('sessionLifecycle').textContent = 'Active & Persisted';
             } else {
                 badge.textContent = 'Unauthenticated';
                 badge.className = 'px-2 py-0.5 rounded bg-rose-500/20 text-rose-400 border border-rose-500/40 font-semibold';
-            }
-        }
-        function inspectToken() {
-            const token = document.getElementById('jwtTokenInput').value.trim() || localStorage.getItem('taskflow_jwt');
-            if (!token) return;
-            try {
-                const parts = token.split('.');
-                if (parts.length !== 3) return;
-                const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-                document.getElementById('decodedPayloadBox').textContent = JSON.stringify(payload, null, 2);
-                if (payload.exp) {
-                    const timeLeft = Math.max(0, payload.exp - Math.floor(Date.now() / 1000));
-                    document.getElementById('tokenExpiryTimer').textContent = timeLeft > 0 ? `${Math.floor(timeLeft / 60)}m ${timeLeft % 60}s` : 'Expired';
-                }
-            } catch (e) {
-                console.error(e);
             }
         }
         function refreshSessionState() {
@@ -206,14 +396,11 @@
             if (saved) {
                 document.getElementById('jwtTokenInput').value = saved;
                 updateAuthUI(true);
-                inspectToken();
             } else {
                 updateAuthUI(false);
             }
         }
-        window.onload = () => {
-            refreshSessionState();
-        }
+        window.onload = () => { refreshSessionState(); }
     </script>
 </body>
 </html>
