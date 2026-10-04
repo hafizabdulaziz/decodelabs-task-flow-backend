@@ -70,10 +70,9 @@
   - Enforced strict Charcoal & Emerald theme (`#0D0E11`, `#1A1D24`, `#2A2E3B`, `#10B981`, `#F59E0B`) adhering strictly to the NO-BLUE rule.
 - **Git Commit Hash & Message:** `fix(ui): restore missing endpoint sections and enforce emerald charcoal theme`
 
-## Comprehensive Code Refactoring & Bug Fixes (Issues 1, 2, 3)
+## Final Integration & State Validation Refactoring (Issues 1 & 2)
 - **Date:** Sunday, October 4, 2026
-- **Completed Refactoring & Bug Fixes:**
-  - **Issue 1:** Added `full_name: "Test User"` property in frontend registration payload template to resolve null DB response issue.
-  - **Issue 2:** Standardized CSS layout rules (`.app-layout`, `.sidebar`, `.main-content`) with strict height constraints (`100vh`) and independent vertical scrolling.
-  - **Issue 3:** Implemented strict authentication guard in `fetchCurrentUser()` checking `localStorage` for `access_token` before executing requests to prevent 401 log spam.
-- **Git Commit Hash & Message:** `refactor(core): fix registration payload, layout constraints, and 401 poll guard`
+- **Completed Refactoring & Fixes:**
+  - **Issue 1:** Updated `testLogin()` in frontend JavaScript to transform login credentials into `URLSearchParams` (`application/x-www-form-urlencoded`), resolving the `422 Unprocessable Entity` error with FastAPI's `OAuth2PasswordRequestForm`.
+  - **Issue 2:** Implemented strict fixed layout container classes (`.control-center-layout`, `.sidebar-panel`, `.content-panel`) with `100vh` viewport height and independent scrolling in `styles.css` and `dashboard.html`.
+- **Git Commit Hash & Message:** `refactor(auth-ui): fix login 422 error with urlencoded form-data and lock viewport layout`

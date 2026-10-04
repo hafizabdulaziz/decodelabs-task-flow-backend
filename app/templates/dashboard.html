@@ -66,10 +66,10 @@
     </header>
 
     <!-- Main Split View Container -->
-    <div class="flex flex-1 overflow-hidden">
+    <div class="control-center-layout">
         
         <!-- Sidebar Navigation -->
-        <aside class="w-72 bg-charcoalCard border-r border-charcoalBorder flex flex-col shrink-0">
+        <aside class="sidebar-panel bg-charcoalCard border-r border-charcoalBorder flex flex-col">
             <div class="p-4 border-b border-charcoalBorder flex items-center justify-between">
                 <h2 class="text-xs font-bold text-emeraldNeon uppercase tracking-widest flex items-center space-x-2">
                     <i class="fa-solid fa-compass"></i>
@@ -131,7 +131,7 @@
         </aside>
 
         <!-- Main Content Scrollable Area -->
-        <main class="flex-1 overflow-y-auto p-8 space-y-12">
+        <main class="content-panel space-y-12 p-8">
             
             <!-- Header Banner -->
             <div class="bg-charcoalCard border border-charcoalBorder rounded-2xl p-6 shadow-xl flex items-center justify-between">
@@ -495,14 +495,29 @@
         }
 
         async function testLogin() {
-            const payload = document.getElementById('loginPayload').value;
+            const rawPayload = document.getElementById('loginPayload').value;
             const out = document.getElementById('loginOutput');
             out.textContent = "Executing POST /api/v1/auth/login...\n";
             try {
+                let email = "user@example.com";
+                let password = "SecurePassword123!";
+                try {
+                    const parsed = JSON.parse(rawPayload);
+                    email = parsed.email || parsed.username || email;
+                    password = parsed.password || password;
+                } catch (e) {
+                    // fallback if not JSON
+                }
+
+                const formData = new URLSearchParams();
+                formData.append('username', email);
+                formData.append('password', password);
+                formData.append('grant_type', 'password');
+
                 const res = await fetch('/api/v1/auth/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: payload
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
                 });
                 const data = await res.json();
                 out.textContent = JSON.stringify(data, null, 2);
