@@ -40,10 +40,6 @@
             </div>
 
             <div class="flex items-center space-x-6">
-                <div class="relative">
-                    <input type="text" id="schemaSearchInput" oninput="filterSchemas()" placeholder="Search schemas (User, Task, Token)..." class="bg-emeraldBase/80 border border-emeraldBorder text-xs rounded-lg px-4 py-2 pl-9 w-72 text-slate-200 focus:outline-none focus:border-emeraldCyan">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                </div>
                 <div class="flex items-center space-x-3">
                     <button onclick="openApiDocs()" class="bg-emeraldCard hover:bg-emeraldBorder/50 border border-emeraldBorder px-3 py-1.5 rounded-lg text-xs font-medium text-slate-200 transition flex items-center space-x-1.5">
                         <i class="fa-solid fa-book-open text-emeraldCyan"></i>
@@ -64,132 +60,105 @@
             <aside class="w-72 bg-emeraldCard/60 border-r border-emeraldBorder flex flex-col shrink-0">
                 <div class="p-4 border-b border-emeraldBorder">
                     <h2 class="text-sm font-bold text-emeraldCyan uppercase tracking-wider flex items-center justify-between">
-                        <span>Schema Explorer</span>
-                        <span class="text-xs bg-emeraldBorder px-1.5 py-0.5 rounded text-slate-300">Phase 6 - Step 6.3</span>
+                        <span>Console Logs</span>
+                        <span class="text-xs bg-emeraldBorder px-1.5 py-0.5 rounded text-slate-300">Phase 7</span>
                     </h2>
                 </div>
                 <div class="flex-1 overflow-y-auto p-4 space-y-6 text-sm">
                     <div>
-                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Pydantic Models</div>
-                        <ul class="space-y-1">
-                            <li><a href="#schema-user" class="block px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white font-mono text-xs">UserResponse</a></li>
-                            <li><a href="#schema-task" class="block px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white font-mono text-xs">TaskResponse</a></li>
-                            <li><a href="#schema-token" class="block px-3 py-2 rounded-md hover:bg-emeraldBorder/40 transition text-slate-300 hover:text-white font-mono text-xs">TokenPayload</a></li>
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Request History (Last 10)</div>
+                        <ul id="historyList" class="space-y-1 text-xs">
+                            <li class="px-2 py-1 bg-emeraldBase/60 rounded text-slate-300 font-mono">GET /health - 200 OK</li>
+                            <li class="px-2 py-1 bg-emeraldBase/60 rounded text-slate-300 font-mono">POST /api/v1/auth/login - 200 OK</li>
                         </ul>
                     </div>
                 </div>
             </aside>
 
             <!-- Main Content Area -->
-            <main class="flex-1 overflow-y-auto p-8 space-y-8">
-                <div class="flex items-center justify-between mb-2">
-                    <div>
-                        <h2 class="text-2xl font-bold text-white tracking-tight">Phase 6: Schema Viewer & OpenAPI Spec Visualizer</h2>
-                        <p class="text-xs text-slate-400 mt-1">Interactive accordion schema cards with copyable JSON examples and fuzzy search lookup.</p>
+            <main class="flex-1 overflow-y-auto p-8 space-y-8 flex flex-col justify-between">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <div>
+                            <h2 class="text-2xl font-bold text-white tracking-tight">Phase 7: Live Request / Response Console & History Log</h2>
+                            <p class="text-xs text-slate-400 mt-1">Docked interactive terminal console, cURL export utilities, and execution history log.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 7.1 & 7.2 & 7.3: Bottom Docked Terminal Console -->
+                    <div class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="px-2.5 py-1 bg-emeraldAccent text-emeraldBase text-xs font-extrabold rounded font-mono">TERMINAL</span>
+                                <span class="text-base font-mono font-semibold text-white">Interactive HTTP Response Log</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="copyAsCurl()" class="bg-emeraldBorder hover:bg-emeraldBorder/80 text-white px-3 py-1 rounded text-xs font-semibold">Copy as cURL</button>
+                                <button onclick="downloadJson()" class="bg-emeraldCyan hover:bg-emeraldCyan/90 text-emeraldBase px-3 py-1 rounded text-xs font-bold">Download JSON</button>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex space-x-2">
+                                <input type="text" id="consoleEndpoint" value="/api/v1/tasks/" class="flex-1 bg-emeraldBase border border-emeraldBorder rounded px-3 py-1.5 text-xs font-mono text-slate-200">
+                                <button onclick="executeConsoleRequest()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded text-xs font-bold">Run Request</button>
+                            </div>
+                            <pre id="consoleOutput" class="bg-emeraldBase/90 border border-emeraldBorder rounded p-4 text-xs font-mono text-slate-300 h-48 overflow-y-auto">// Terminal console output ready...</pre>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Schema Accordion Cards -->
-                <div id="schemasContainer" class="space-y-6">
-                    
-                    <!-- UserResponse Schema -->
-                    <div id="schema-user" class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40 schema-card" data-name="userresponse">
-                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleAccordion('userContent')">
-                            <div class="flex items-center space-x-3">
-                                <span class="px-2.5 py-1 bg-emeraldCyan text-emeraldBase text-xs font-extrabold rounded font-mono">SCHEMA</span>
-                                <span class="text-base font-mono font-semibold text-white">UserResponse</span>
-                            </div>
-                            <i class="fa-solid fa-chevron-down text-slate-400"></i>
-                        </div>
-                        <div id="userContent" class="mt-4 hidden space-y-3">
-                            <p class="text-xs text-slate-300">Represents public user profile attributes returned by API.</p>
-                            <div class="relative">
-                                <pre class="bg-emeraldBase/80 border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-300 overflow-x-auto">{
-  "id": "uuid-string",
-  "email": "user@decodelabs.ai",
-  "full_name": "Abdul Aziz",
-  "is_active": true
-}</pre>
-                                <button onclick="copySchemaJson('userContent')" class="absolute top-2 right-2 bg-emeraldBorder hover:bg-emeraldBorder/80 text-white px-2.5 py-1 rounded text-xs">Copy JSON</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TaskResponse Schema -->
-                    <div id="schema-task" class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40 schema-card" data-name="taskresponse">
-                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleAccordion('taskContent')">
-                            <div class="flex items-center space-x-3">
-                                <span class="px-2.5 py-1 bg-emeraldCyan text-emeraldBase text-xs font-extrabold rounded font-mono">SCHEMA</span>
-                                <span class="text-base font-mono font-semibold text-white">TaskResponse</span>
-                            </div>
-                            <i class="fa-solid fa-chevron-down text-slate-400"></i>
-                        </div>
-                        <div id="taskContent" class="mt-4 hidden space-y-3">
-                            <p class="text-xs text-slate-300">Represents task item entity returned by task CRUD endpoints.</p>
-                            <div class="relative">
-                                <pre class="bg-emeraldBase/80 border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-300 overflow-x-auto">{
-  "id": "uuid-string",
-  "title": "Complete Control Center UI",
-  "description": "Build high-end Decodelabs dashboard",
-  "status": "pending",
-  "priority": "high",
-  "owner_id": "uuid-string"
-}</pre>
-                                <button onclick="copySchemaJson('taskContent')" class="absolute top-2 right-2 bg-emeraldBorder hover:bg-emeraldBorder/80 text-white px-2.5 py-1 rounded text-xs">Copy JSON</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TokenPayload Schema -->
-                    <div id="schema-token" class="glass-panel rounded-xl p-6 shadow-xl border border-emeraldBorder/60 bg-emeraldCard/40 schema-card" data-name="tokenpayload">
-                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleAccordion('tokenContent')">
-                            <div class="flex items-center space-x-3">
-                                <span class="px-2.5 py-1 bg-emeraldCyan text-emeraldBase text-xs font-extrabold rounded font-mono">SCHEMA</span>
-                                <span class="text-base font-mono font-semibold text-white">TokenPayload</span>
-                            </div>
-                            <i class="fa-solid fa-chevron-down text-slate-400"></i>
-                        </div>
-                        <div id="tokenContent" class="mt-4 hidden space-y-3">
-                            <p class="text-xs text-slate-300">Represents Bearer JWT access token response structure.</p>
-                            <div class="relative">
-                                <pre class="bg-emeraldBase/80 border border-emeraldBorder rounded p-3 text-xs font-mono text-slate-300 overflow-x-auto">{
-  "access_token": "eyJhbGciOi...",
-  "token_type": "bearer"
-}</pre>
-                                <button onclick="copySchemaJson('tokenContent')" class="absolute top-2 right-2 bg-emeraldBorder hover:bg-emeraldBorder/80 text-white px-2.5 py-1 rounded text-xs">Copy JSON</button>
-                            </div>
-                        </div>
-                    </div>
-
+                <div class="text-center text-xs text-slate-500 py-4 border-t border-emeraldBorder/40">
+                    Decodelabs Task Flow API Control Center &copy; 2026 - Enterprise Grade Agentic Architecture
                 </div>
-
             </main>
         </div>
     </div>
 
     <script>
-        function toggleAccordion(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden');
+        let lastResponseData = {};
+
+        async function executeConsoleRequest() {
+            const endpoint = document.getElementById('consoleEndpoint').value.trim();
+            const out = document.getElementById('consoleOutput');
+            out.textContent = `Executing GET ${endpoint}...\n`;
+            const start = performance.now();
+            try {
+                const res = await fetch(endpoint);
+                const data = await res.json();
+                lastResponseData = data;
+                const latency = Math.round(performance.now() - start);
+                out.textContent += `Status: ${res.status} ${res.statusText} (${latency}ms)\n\n` + JSON.stringify(data, null, 2);
+                pushHistory(endpoint, res.status);
+            } catch (err) {
+                out.textContent += `Error: ${err.message}`;
+            }
         }
 
-        function filterSchemas() {
-            const query = document.getElementById('schemaSearchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.schema-card');
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name');
-                if (name.includes(query)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
+        function copyAsCurl() {
+            const endpoint = document.getElementById('consoleEndpoint').value.trim();
+            const curl = `curl -X GET "http://localhost:8000${endpoint}" -H "Accept: application/json"`;
+            navigator.clipboard.writeText(curl);
+            alert('cURL command copied to clipboard!');
         }
 
-        function copySchemaJson(id) {
-            const pre = document.querySelector(`#${id} pre`);
-            navigator.clipboard.writeText(pre.textContent);
-            alert('Schema JSON copied to clipboard!');
+        function downloadJson() {
+            const blob = new Blob([JSON.stringify(lastResponseData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'response_export.json';
+            a.click();
+        }
+
+        function pushHistory(endpoint, status) {
+            const list = document.getElementById('historyList');
+            const li = document.createElement('li');
+            li.className = 'px-2 py-1 bg-emeraldBase/60 rounded text-slate-300 font-mono flex justify-between';
+            li.innerHTML = `<span>GET ${endpoint}</span><span class="text-green-400">${status} OK</span>`;
+            list.prepend(li);
+            if (list.children.length > 10) {
+                list.removeChild(list.lastChild);
+            }
         }
 
         function openApiDocs() { window.open('/docs', '_blank'); }
