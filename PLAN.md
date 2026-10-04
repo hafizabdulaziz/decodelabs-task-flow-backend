@@ -32,8 +32,9 @@
 - [x] **Part 5.3:** Connect `/metrics` route with interactive tabular data display. (`feat(prometheus): format raw metrics into human-readable dashboard widgets`)
 
 ## Phase 6: Schema Viewer & OpenAPI Spec Visualizer
-- [ ] **Part 6.1:** Redesign Pydantic Schema section into interactive accordion cards with copyable JSON examples. (`ui(schemas): rebuild object schema viewer with code-highlighting`)
-- [ ] **Part 6.2:** Add search and filter bar for quick schema/model lookup. (`feat(schema-search): implement fuzzy search for Pydantic response models`)
+- [x] **Part 6.1:** Redesign Pydantic Schema section into interactive accordion cards with copyable JSON examples. (`ui(schemas): rebuild object schema viewer with code-highlighting`)
+- [x] **Part 6.2:** Add copyable JSON example payloads for schemas. (`feat(schemas): add copyable JSON payloads and code snippet tools`)
+- [x] **Part 6.3:** Add search and filter bar for quick schema/model lookup. (`feat(schema-search): implement fuzzy search for Pydantic response models`)
 
 ## Phase 7: Live Request / Response Console & History Log
 - [ ] **Part 7.1:** Build interactive Terminal Console at bottom-dock for Curl commands and HTTP Responses. (`ui(console): design docked interactive HTTP response log terminal`)
