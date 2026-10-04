@@ -12,9 +12,9 @@
 - [x] **Part 1.3:** Replace default Swagger UI HTML shell with a custom-rendered FastAPI endpoint `/docs`. (`feat(docs): mount custom HTML route for production API dashboard`)
 
 ## Phase 2: Modern Layout & Glassmorphism Dashboard UI
-- [ ] **Part 2.1:** Build top navigation bar with live server status, environment badge, and fast-action tools. (`ui(header): implement top navigation bar with dynamic status indicator`)
-- [ ] **Part 2.2:** Construct split-view dashboard sidebar (Endpoints Directory, Schemas, Analytics, Logs). (`ui(sidebar): build responsive navigation sidebar with category filtering`)
-- [ ] **Part 2.3:** Apply glassmorphism styling (backdrop-blur, custom borders) to all endpoint cards. (`ui(cards): convert Swagger endpoint panels into glassmorphic cards`)
+- [x] **Part 2.1:** Build top navigation bar with live server status, environment badge, and fast-action tools. (`ui(header): implement top navigation bar with dynamic status indicator`)
+- [x] **Part 2.2:** Construct split-view dashboard sidebar (Endpoints Directory, Schemas, Analytics, Logs). (`ui(sidebar): build responsive navigation sidebar with category filtering`)
+- [x] **Part 2.3:** Apply glassmorphism styling (backdrop-blur, custom borders) to all endpoint cards. (`ui(cards): convert Swagger endpoint panels into glassmorphic cards`)
 
 ## Phase 3: Interactive Auth & Token Management Suite
 - [ ] **Part 3.1:** Create sticky top-tier Quick Auth Bar for Bearer JWT Injection. (`feat(auth-ui): create dedicated JWT quick-injection status panel`)
