@@ -10,7 +10,7 @@ Decodelabs Task Flow Backend is an enterprise-ready backend application designed
 ---
 
 ## 🛠️ Tech Stack & Architecture
-- **Phase 7:** Interactive Terminal Console, cURL Export & Request History.
+- **Phase 8:** Production vs Local Environment Switcher & Error Diagnostics.
 - **Database & ORM:** PostgreSQL (Neon Serverless) via SQLAlchemy (Async)
 - **Migrations:** Alembic (Async env setup)
 - **Security:** Argon2 password hashing (via `passlib`) & JWT authentication (via `python-jose`)
