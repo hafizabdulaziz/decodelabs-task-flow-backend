@@ -41,7 +41,7 @@
 - [x] **Part 7.2:** Add 1-click "Copy as Curl" and "Download Response JSON" buttons. (`feat(console-tools): add request export utilities for cURL and JSON payloads`)
 - [x] **Part 7.3:** Implement request execution history storage (stores last 10 API executions). (`feat(history): retain client-side request history with quick re-run trigger`)
 
-## Phase 8: Advanced Enterprise Features (Portfolio Elevators)
+## Phase 8: Advanced Enterprise Features (Portfolio Elevators) - Updated Phase 8.2
 - [x] **Part 8.1:** Add "Production vs Local Environment" switcher toggle. (`feat(env-switch): implement dynamic base-URL toggle mechanism`)
 - [x] **Part 8.2:** Add interactive Rate Limiting status bar indicator (`X-RateLimit` headers visualizer). (`ui(rate-limit): display rate limit quotas dynamically per route execution`)
 - [x] **Part 8.3:** Integrate custom API Error Diagnostic tool for 4xx/5xx responses with helpful hints. (`feat(diagnostics): build smart error diagnostic panel for API debugging`)
