@@ -14,6 +14,7 @@ from app.config import settings
 from app.api.v1.auth import router as auth_router
 from app.api.v1.users import router as users_router
 from app.api.v1.tasks import router as tasks_router
+from app.api.v1.system import router as system_router
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -104,6 +105,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1")
 app.include_router(tasks_router, prefix="/api/v1")
+app.include_router(system_router, prefix="/api/v1")
 
 
 @app.get("/")

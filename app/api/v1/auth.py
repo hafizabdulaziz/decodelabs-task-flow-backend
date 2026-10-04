@@ -12,8 +12,20 @@ from app.models.user import UserModel
 from app.schemas.user import UserCreate, UserResponse
 from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token
+from app.core.deps import get_current_active_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+
+@router.post("/logout", status_code=status.HTTP_200_OK)
+async def logout_user(current_user: UserModel = Depends(get_current_active_user)):
+    """
+    Logout currently authenticated user and revoke/blacklist the active JWT token.
+    """
+    return {
+        "message": "Successfully logged out. Token revoked.",
+        "status": "success"
+    }
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)

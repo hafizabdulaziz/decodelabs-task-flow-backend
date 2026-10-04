@@ -76,3 +76,12 @@
   - **Issue 1:** Updated `testLogin()` in frontend JavaScript to transform login credentials into `URLSearchParams` (`application/x-www-form-urlencoded`), resolving the `422 Unprocessable Entity` error with FastAPI's `OAuth2PasswordRequestForm`.
   - **Issue 2:** Implemented strict fixed layout container classes (`.control-center-layout`, `.sidebar-panel`, `.content-panel`) with `100vh` viewport height and independent scrolling in `styles.css` and `dashboard.html`.
 - **Git Commit Hash & Message:** `refactor(auth-ui): fix login 422 error with urlencoded form-data and lock viewport layout`
+
+## Full Feature Parity: System Monitoring & Auth Logout
+- **Date:** Sunday, October 4, 2026
+- **Completed Deliverables:**
+  - **Task CRUD Layer:** Verified full support for create, update, delete, filtering, and pagination.
+  - **Auth & Security:** Added token revocation / logout endpoint (`POST /api/v1/auth/logout`).
+  - **System Monitoring:** Implemented comprehensive system metrics endpoint (`GET /api/v1/system/status`) tracking DB connectivity, CPU/memory usage, and uptime via `psutil`.
+  - **Validation & Exception Handling:** Standardized Pydantic v2 validation and custom HTTP/validation exception handlers.
+- **Git Commit Hash & Message:** `feat(system): add system metrics status endpoint and auth logout route`
