@@ -7,9 +7,9 @@
 ---
 
 ## Phase 1: Project Re-Architecture & Base Design System Setup
-- [ ] **Part 1.1:** Setup modular project structure for Custom UI templates and static assets. (`feat(ui): initialize modular static and template directory structure`)
-- [ ] **Part 1.2:** Configure Tailwind CSS engine with custom theme colors (Deep Emerald / Obsidian Cyan). (`style(theme): add custom dark emerald color tokens and typography config`)
-- [ ] **Part 1.3:** Replace default Swagger UI HTML shell with a custom-rendered FastAPI endpoint `/docs`. (`feat(docs): mount custom HTML route for production API dashboard`)
+- [x] **Part 1.1:** Setup modular project structure for Custom UI templates and static assets. (`feat(ui): initialize modular static and template directory structure`)
+- [x] **Part 1.2:** Configure Tailwind CSS engine with custom theme colors (Deep Emerald / Obsidian Cyan). (`style(theme): add custom dark emerald color tokens and typography config`)
+- [x] **Part 1.3:** Replace default Swagger UI HTML shell with a custom-rendered FastAPI endpoint `/docs`. (`feat(docs): mount custom HTML route for production API dashboard`)
 
 ## Phase 2: Modern Layout & Glassmorphism Dashboard UI
 - [ ] **Part 2.1:** Build top navigation bar with live server status, environment badge, and fast-action tools. (`ui(header): implement top navigation bar with dynamic status indicator`)
