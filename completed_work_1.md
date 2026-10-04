@@ -23,4 +23,16 @@
   - `app/templates/dashboard.html`
   - `PLAN.md`
   - `completed_work_1.md`
-- **Next Immediate Task:** Phase 5, Part 5.1 - Integrate real-time Server Uptime and Latency widget inside `/health` tab.
+
+## Phase 5: Real-Time API Metrics & Health Operations
+- **Date:** Sunday, October 4, 2026
+- **Completed Sub-tasks:**
+  - Part 5.1: Integrated real-time Server Uptime and Latency widget inside `/health` tab. (Commit: `52efefa`)
+  - Part 5.2: Built memory usage and active request counter visual charts. (Commit: `6cbf019`)
+  - Part 5.3: Connected `/metrics` route with interactive tabular data display. (Commit: `6b84c3f`)
+- **Git Commit Hash & Message:** `6b84c3f` - `feat(prometheus): format raw metrics into human-readable dashboard widgets`
+- **Files Modified/Created:**
+  - `app/templates/dashboard.html`
+  - `PLAN.md`
+  - `completed_work_1.md`
+- **Next Immediate Task:** Phase 6, Part 6.1 - Redesign Pydantic Schema section into interactive accordion cards with copyable JSON examples.

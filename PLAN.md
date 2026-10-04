@@ -27,9 +27,9 @@
 - [x] **Part 4.3:** Restructure Task Management Endpoints (`/tasks/`) with filter tags and priority badges. (`ui(task-endpoints): enhance task CRUD controllers with status indicators`)
 
 ## Phase 5: Real-Time API Metrics & Health Operations
-- [ ] **Part 5.1:** Integrate real-time Server Uptime and Latency widget inside `/health` tab. (`feat(metrics): add real-time health and uptime execution widget`)
-- [ ] **Part 5.2:** Build memory usage and active request counter visual charts. (`ui(telemetry): design visual performance indicators for API diagnostics`)
-- [ ] **Part 5.3:** Connect `/metrics` route with interactive tabular data display. (`feat(prometheus): format raw metrics into human-readable dashboard widgets`)
+- [x] **Part 5.1:** Integrate real-time Server Uptime and Latency widget inside `/health` tab. (`feat(metrics): add real-time health and uptime execution widget`)
+- [x] **Part 5.2:** Build memory usage and active request counter visual charts. (`ui(telemetry): design visual performance indicators for API diagnostics`)
+- [x] **Part 5.3:** Connect `/metrics` route with interactive tabular data display. (`feat(prometheus): format raw metrics into human-readable dashboard widgets`)
 
 ## Phase 6: Schema Viewer & OpenAPI Spec Visualizer
 - [ ] **Part 6.1:** Redesign Pydantic Schema section into interactive accordion cards with copyable JSON examples. (`ui(schemas): rebuild object schema viewer with code-highlighting`)
