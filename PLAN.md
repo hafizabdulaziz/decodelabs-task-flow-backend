@@ -37,20 +37,20 @@
 - [x] **Part 6.3:** Add search and filter bar for quick schema/model lookup. (`feat(schema-search): implement fuzzy search for Pydantic response models`)
 
 ## Phase 7: Live Request / Response Console & History Log
-- [ ] **Part 7.1:** Build interactive Terminal Console at bottom-dock for Curl commands and HTTP Responses. (`ui(console): design docked interactive HTTP response log terminal`)
-- [ ] **Part 7.2:** Add 1-click "Copy as Curl" and "Download Response JSON" buttons. (`feat(console-tools): add request export utilities for cURL and JSON payloads`)
-- [ ] **Part 7.3:** Implement request execution history storage (stores last 10 API executions). (`feat(history): retain client-side request history with quick re-run trigger`)
+- [x] **Part 7.1:** Build interactive Terminal Console at bottom-dock for Curl commands and HTTP Responses. (`ui(console): design docked interactive HTTP response log terminal`)
+- [x] **Part 7.2:** Add 1-click "Copy as Curl" and "Download Response JSON" buttons. (`feat(console-tools): add request export utilities for cURL and JSON payloads`)
+- [x] **Part 7.3:** Implement request execution history storage (stores last 10 API executions). (`feat(history): retain client-side request history with quick re-run trigger`)
 
 ## Phase 8: Advanced Enterprise Features (Portfolio Elevators)
-- [ ] **Part 8.1:** Add "Production vs Local Environment" switcher toggle. (`feat(env-switch): implement dynamic base-URL toggle mechanism`)
-- [ ] **Part 8.2:** Add interactive Rate Limiting status bar indicator (`X-RateLimit` headers visualizer). (`ui(rate-limit): display rate limit quotas dynamically per route execution`)
-- [ ] **Part 8.3:** Integrate custom API Error Diagnostic tool for 4xx/5xx responses with helpful hints. (`feat(diagnostics): build smart error diagnostic panel for API debugging`)
+- [x] **Part 8.1:** Add "Production vs Local Environment" switcher toggle. (`feat(env-switch): implement dynamic base-URL toggle mechanism`)
+- [x] **Part 8.2:** Add interactive Rate Limiting status bar indicator (`X-RateLimit` headers visualizer). (`ui(rate-limit): display rate limit quotas dynamically per route execution`)
+- [x] **Part 8.3:** Integrate custom API Error Diagnostic tool for 4xx/5xx responses with helpful hints. (`feat(diagnostics): build smart error diagnostic panel for API debugging`)
 
 ## Phase 9: Comprehensive Documentation & OpenAPI Tuning
-- [ ] **Part 9.1:** Update OpenAPI metadata (Title, Description, Contact info, Tags) in FastAPI app definition. (`docs(openapi): update API metadata, tags, and production description`)
-- [ ] **Part 9.2:** Embed custom Markdown documentation panel directly inside dashboard header. (`docs(dashboard): add embedded documentation guide for testing endpoints`)
+- [x] **Part 9.1:** Update OpenAPI metadata (Title, Description, Contact info, Tags) in FastAPI app definition. (`docs(openapi): update API metadata, tags, and production description`)
+- [x] **Part 9.2:** Embed custom Markdown documentation panel directly inside dashboard header. (`docs(dashboard): add embedded documentation guide for testing endpoints`)
 
 ## Phase 10: Final Audit, Build Validation & Portfolio Polish
-- [ ] **Part 10.1:** Execute full Pytest automated test suite to ensure no backend breaking changes. (`test(suite): validate all authentication and task endpoints pass with 100% accuracy`)
-- [ ] **Part 10.2:** Run code formatting and static code checks via Ruff. (`style(lint): format codebase and fix linting errors across modules`)
-- [ ] **Part 10.3:** Update README.md with high-resolution screenshots, feature list, and architecture guide. (`docs(readme): finalize project documentation with updated UI showcase and features`)
+- [x] **Part 10.1:** Execute full Pytest automated test suite to ensure no backend breaking changes. (`test(suite): validate all authentication and task endpoints pass with 100% accuracy`)
+- [x] **Part 10.2:** Run code formatting and static code checks via Ruff. (`style(lint): format codebase and fix linting errors across modules`)
+- [x] **Part 10.3:** Update README.md with high-resolution screenshots, feature list, and architecture guide. (`docs(readme): finalize project documentation with updated UI showcase and features`)
