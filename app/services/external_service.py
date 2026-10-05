@@ -5,7 +5,7 @@ Service layer for fetching, translating, and shielding external third-party API 
 import logging
 import httpx
 from datetime import datetime, timezone
-from typing import Dict, Any, Tuple
+from typing import Tuple
 from app.services.http_client import http_manager
 from app.schemas.external import ClientThirdPartyDataResponse
 

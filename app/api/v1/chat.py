@@ -115,7 +115,7 @@ async def chat_assistant(req: ChatRequest, db: AsyncSession = Depends(get_db)):
     # 5. Default conversational fallback
     else:
         return ChatResponse(
-            reply=f"Hello! I am your DecodeLabs AI Assistant. You can ask me to 'check weather', 'create task [title]', 'register user [email]', or check 'system status'.",
+            reply="Hello! I am your DecodeLabs AI Assistant. You can ask me to 'check weather', 'create task [title]', 'register user [email]', or check 'system status'.",
             action_executed="none",
             data={}
         )

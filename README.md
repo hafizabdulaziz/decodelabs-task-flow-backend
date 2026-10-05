@@ -99,6 +99,28 @@ To test authentication and execute requests via Swagger UI (`http://127.0.0.1:80
 
 ---
 
+## 🚨 Standardized Global Exception Handling & Error Schemas
+Sentinel Auth Vault implements a strict, centralized global exception handling mechanism catching `HTTPException`, `RequestValidationError`, and unhandled system errors (`Exception`). All API error responses conform to a uniform Pydantic schema:
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `error_code` | `str` | Machine-readable error code (e.g., `UNAUTHORIZED`, `VALIDATION_ERROR`, `BAD_REQUEST`, `FORBIDDEN_ACCESS`, `NOT_FOUND`, `INTERNAL_SERVER_ERROR`) |
+| `message` | `str` | Human-readable explanation of the error |
+| `detail` | `str` | Backward-compatible detail string mirroring the message |
+| `timestamp` | `str` | ISO-8601 UTC timestamp of error occurrence |
+
+### Example Error Response (`401 Unauthorized`)
+```json
+{
+  "error_code": "UNAUTHORIZED",
+  "message": "Could not validate credentials",
+  "detail": "Could not validate credentials",
+  "timestamp": "2026-10-05T14:30:00.000000+00:00"
+}
+```
+
+---
+
 ## 🧪 Testing & Code Quality Checks
 - **Run Tests (Zero Warnings):**
   ```bash

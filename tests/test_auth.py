@@ -107,7 +107,8 @@ async def test_login_invalid_grant_type():
             },
         )
         assert login_resp.status_code == 422
-        errors = login_resp.json()["detail"]
-        assert any(err["loc"] == ["body", "grant_type"] for err in errors)
+        data = login_resp.json()
+        assert data["error_code"] == "VALIDATION_ERROR"
+        assert "grant_type" in data["message"]
 
 
