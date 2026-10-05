@@ -84,7 +84,7 @@
                     <div class="text-[10px] font-semibold text-textMuted uppercase tracking-wider mb-2">Navigation Sections</div>
                     <a href="#section-auth" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-charcoalBase/50 hover:bg-charcoalBase text-xs font-medium text-textPrimary transition">
                         <i class="fa-solid fa-shield-halved text-amberWarning w-4"></i>
-                        <span>1. Authentication (Auth)</span>
+                        <span>1. Authentication (Auth & Logout)</span>
                     </a>
                     <a href="#section-users" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-charcoalBase/50 hover:bg-charcoalBase text-xs font-medium text-textPrimary transition">
                         <i class="fa-solid fa-user-gear text-emeraldNeon w-4"></i>
@@ -92,7 +92,7 @@
                     </a>
                     <a href="#section-tasks" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-charcoalBase/50 hover:bg-charcoalBase text-xs font-medium text-textPrimary transition">
                         <i class="fa-solid fa-list-check text-emeraldNeon w-4"></i>
-                        <span>3. Task Management (CRUD)</span>
+                        <span>3. Task CRUD, Filter & Search</span>
                     </a>
                     <a href="#section-schemas" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-charcoalBase/50 hover:bg-charcoalBase text-xs font-medium text-textPrimary transition">
                         <i class="fa-solid fa-code text-amberWarning w-4"></i>
@@ -104,7 +104,7 @@
                     </a>
                     <a href="#section-terminal" class="flex items-center space-x-2 px-3 py-2 rounded-lg bg-charcoalBase/50 hover:bg-charcoalBase text-xs font-medium text-textPrimary transition">
                         <i class="fa-solid fa-terminal text-emeraldNeon w-4"></i>
-                        <span>6. Interactive Terminal</span>
+                        <span>6. Live Terminal Console</span>
                     </a>
                 </div>
 
@@ -158,14 +158,14 @@
                     <span class="text-xs font-mono bg-amberWarning/20 text-amberWarning px-2 py-0.5 rounded">Security Suite</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Register Card -->
                     <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
                         <div class="flex items-center justify-between">
                             <span class="px-2 py-0.5 bg-emeraldNeon text-charcoalBase text-xs font-extrabold rounded font-mono">POST</span>
                             <span class="text-xs font-mono text-textMuted">/api/v1/auth/register</span>
                         </div>
-                        <p class="text-xs text-textMuted">Register a new user account with secure password hashing (Argon2).</p>
+                        <p class="text-xs text-textMuted">Register a new user account with secure password hashing.</p>
                         <div class="space-y-2">
                             <label class="text-[11px] font-semibold text-textMuted">JSON Payload</label>
                             <textarea id="regPayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-24 focus:outline-none focus:border-emeraldNeon">{
@@ -184,7 +184,7 @@
                             <span class="px-2 py-0.5 bg-emeraldNeon text-charcoalBase text-xs font-extrabold rounded font-mono">POST</span>
                             <span class="text-xs font-mono text-textMuted">/api/v1/auth/login</span>
                         </div>
-                        <p class="text-xs text-textMuted">Authenticate user credentials and obtain a signed JWT Bearer token.</p>
+                        <p class="text-xs text-textMuted">Authenticate user credentials and obtain signed JWT Bearer token.</p>
                         <div class="space-y-2">
                             <label class="text-[11px] font-semibold text-textMuted">JSON Payload</label>
                             <textarea id="loginPayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-24 focus:outline-none focus:border-emeraldNeon">{
@@ -194,6 +194,19 @@
                             <button onclick="testLogin()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2 rounded text-xs transition">Execute Login & Auto-Inject</button>
                         </div>
                         <pre id="loginOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-28 overflow-y-auto">// Response output...</pre>
+                    </div>
+
+                    <!-- Logout / Token Revocation Card -->
+                    <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 bg-amberWarning text-charcoalBase text-xs font-extrabold rounded font-mono">POST</span>
+                            <span class="text-xs font-mono text-textMuted">/api/v1/auth/logout</span>
+                        </div>
+                        <p class="text-xs text-textMuted">Logout currently authenticated user and revoke/blacklist the active JWT token.</p>
+                        <div class="space-y-2 pt-6">
+                            <button onclick="testLogout()" class="w-full bg-amberWarning hover:bg-amber-500 text-charcoalBase font-bold py-3 rounded text-xs transition">Execute Logout / Revoke Token</button>
+                        </div>
+                        <pre id="logoutOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-28 overflow-y-auto">// Logout response...</pre>
                     </div>
                 </div>
             </section>
@@ -221,45 +234,104 @@
                 </div>
             </section>
 
-            <!-- SECTION C: TASK MANAGEMENT (CRUD) -->
-            <section id="section-tasks" class="space-y-4">
+            <!-- SECTION C: TASK MANAGEMENT (CRUD, FILTER, SEARCH, UPDATE, DELETE) -->
+            <section id="section-tasks" class="space-y-6">
                 <div class="flex items-center justify-between border-b border-charcoalBorder pb-2">
                     <h2 class="text-lg font-bold text-white flex items-center space-x-2">
                         <i class="fa-solid fa-list-check text-emeraldNeon"></i>
-                        <span>3. Task Management Endpoints (/api/v1/tasks)</span>
+                        <span>3. Task Management (CRUD, Filters & Search)</span>
                     </h2>
-                    <span class="text-xs font-mono bg-emeraldNeon/20 text-emeraldNeon px-2 py-0.5 rounded">Full CRUD</span>
+                    <span class="text-xs font-mono bg-emeraldNeon/20 text-emeraldNeon px-2 py-0.5 rounded">Full CRUD Suite</span>
+                </div>
+
+                <!-- Filter & Search Controls Bar -->
+                <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-4 shadow-lg grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div class="space-y-1">
+                        <label class="text-[11px] font-semibold text-textMuted">Search Keyword (q)</label>
+                        <input type="text" id="taskSearchQuery" oninput="testListTasks()" placeholder="Search title/description..." class="w-full bg-charcoalBase border border-charcoalBorder rounded px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[11px] font-semibold text-textMuted">Status Filter</label>
+                        <select id="taskStatusFilter" onchange="testListTasks()" class="w-full bg-charcoalBase border border-charcoalBorder rounded px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[11px] font-semibold text-textMuted">Priority Filter</label>
+                        <select id="taskPriorityFilter" onchange="testListTasks()" class="w-full bg-charcoalBase border border-charcoalBorder rounded px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                            <option value="">All Priorities</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button onclick="testListTasks()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2 rounded text-xs transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-filter"></i>
+                            <span>Filter & List Tasks</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- List Tasks -->
-                    <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 bg-blue-600 text-white text-xs font-extrabold rounded font-mono">GET</span>
-                            <span class="text-xs font-mono text-textMuted">/api/v1/tasks/</span>
-                        </div>
-                        <p class="text-xs text-textMuted">List all tasks associated with the authenticated user with pagination.</p>
-                        <button onclick="testListTasks()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2 rounded text-xs transition">List All Tasks</button>
-                        <pre id="tasksListOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-36 overflow-y-auto">// Task list response...</pre>
-                    </div>
-
-                    <!-- Create Task -->
+                    <!-- Create Task Card -->
                     <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
                         <div class="flex items-center justify-between">
                             <span class="px-2 py-0.5 bg-emeraldNeon text-charcoalBase text-xs font-extrabold rounded font-mono">POST</span>
                             <span class="text-xs font-mono text-textMuted">/api/v1/tasks/</span>
                         </div>
-                        <p class="text-xs text-textMuted">Create a new task with title, description, and status priority.</p>
+                        <p class="text-xs text-textMuted">Create a new task with title, description, status, and priority.</p>
                         <div class="space-y-2">
-                            <textarea id="taskCreatePayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2 text-xs font-mono text-textPrimary h-20 focus:outline-none focus:border-emeraldNeon">{
+                            <textarea id="taskCreatePayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-28 focus:outline-none focus:border-emeraldNeon">{
   "title": "Complete Enterprise Architecture",
-  "description": "Finish all 10 phases with 100% test coverage.",
-  "completed": false
+  "description": "Finish all phases with 100% test coverage.",
+  "status": "pending",
+  "priority": "high"
 }</textarea>
                             <button onclick="testCreateTask()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2 rounded text-xs transition">Create Task</button>
                         </div>
                         <pre id="taskCreateOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-24 overflow-y-auto">// Create response...</pre>
                     </div>
+
+                    <!-- Update Task Card (PATCH) -->
+                    <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-0.5 bg-amberWarning text-charcoalBase text-xs font-extrabold rounded font-mono">PATCH</span>
+                            <span class="text-xs font-mono text-textMuted">/api/v1/tasks/{id}</span>
+                        </div>
+                        <p class="text-xs text-textMuted">Update task details (title, description, status, priority) by Task ID.</p>
+                        <div class="space-y-2">
+                            <div class="flex space-x-2">
+                                <input type="number" id="updateTaskId" placeholder="Task ID" class="w-28 bg-charcoalBase border border-charcoalBorder rounded px-2.5 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                                <span class="text-xs text-textMuted self-center">JSON Update Payload:</span>
+                            </div>
+                            <textarea id="taskUpdatePayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-24 focus:outline-none focus:border-emeraldNeon">{
+  "title": "Updated Task Title",
+  "status": "in_progress",
+  "priority": "medium"
+}</textarea>
+                            <button onclick="testUpdateTask()" class="w-full bg-amberWarning hover:bg-amber-500 text-charcoalBase font-bold py-2 rounded text-xs transition">Update Task</button>
+                        </div>
+                        <pre id="taskUpdateOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-24 overflow-y-auto">// Update response...</pre>
+                    </div>
+                </div>
+
+                <!-- Task List Display Cards Container -->
+                <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-6 space-y-4 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-tasks text-emeraldNeon"></i>
+                            <span>Retrieved Tasks List & Delete Actions</span>
+                        </h3>
+                        <span id="taskCountBadge" class="text-xs font-mono bg-emeraldNeon/10 text-emeraldNeon px-2 py-0.5 rounded">0 tasks found</span>
+                    </div>
+                    <div id="tasksListCards" class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                        <div class="text-xs text-textMuted font-mono italic p-4 bg-charcoalBase rounded text-center">Click "Filter & List Tasks" above to load and interact with tasks.</div>
+                    </div>
+                    <pre id="tasksListOutput" class="hidden bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-36 overflow-y-auto">// Raw task list response...</pre>
                 </div>
             </section>
 
@@ -276,39 +348,50 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- UserSchema -->
                     <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-3 shadow-lg">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-sm text-emeraldNeon">UserResponse</span>
-                            <button onclick="copySchema('userSchemaCode')" class="text-textMuted hover:text-white text-xs"><i class="fa-regular fa-copy"></i> Copy</button>
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleSchemaCollapse('userSchemaCode', 'userSchemaChevron')">
+                            <span class="font-bold text-sm text-emeraldNeon flex items-center space-x-2">
+                                <span>UserResponse</span>
+                                <i id="userSchemaChevron" class="fa-solid fa-chevron-down text-xs transition transform rotate-180"></i>
+                            </span>
+                            <button onclick="event.stopPropagation(); copySchema('userSchemaCode')" class="text-textMuted hover:text-white text-xs"><i class="fa-regular fa-copy"></i> Copy</button>
                         </div>
-                        <pre id="userSchemaCode" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted overflow-x-auto">{
+                        <pre id="userSchemaCode" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted overflow-x-auto transition-all">{
   "id": "integer",
   "email": "string",
+  "full_name": "string",
   "is_active": "boolean"
 }</pre>
                     </div>
 
                     <!-- TaskSchema -->
                     <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-3 shadow-lg">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-sm text-emeraldNeon">TaskResponse</span>
-                            <button onclick="copySchema('taskSchemaCode')" class="text-textMuted hover:text-white text-xs"><i class="fa-regular fa-copy"></i> Copy</button>
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleSchemaCollapse('taskSchemaCode', 'taskSchemaChevron')">
+                            <span class="font-bold text-sm text-emeraldNeon flex items-center space-x-2">
+                                <span>TaskResponse</span>
+                                <i id="taskSchemaChevron" class="fa-solid fa-chevron-down text-xs transition transform rotate-180"></i>
+                            </span>
+                            <button onclick="event.stopPropagation(); copySchema('taskSchemaCode')" class="text-textMuted hover:text-white text-xs"><i class="fa-regular fa-copy"></i> Copy</button>
                         </div>
-                        <pre id="taskSchemaCode" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted overflow-x-auto">{
+                        <pre id="taskSchemaCode" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted overflow-x-auto transition-all">{
   "id": "integer",
   "title": "string",
   "description": "string",
-  "completed": "boolean",
+  "status": "TaskStatus (pending/in_progress/completed)",
+  "priority": "TaskPriority (low/medium/high)",
   "owner_id": "integer"
 }</pre>
                     </div>
 
                     <!-- TokenSchema -->
                     <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-3 shadow-lg">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-sm text-emeraldNeon">TokenResponse</span>
-                            <button onclick="copySchema('tokenSchemaCode')" class="text-textMuted hover:text-white text-xs"><i class="fa-regular fa-copy"></i> Copy</button>
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleSchemaCollapse('tokenSchemaCode', 'tokenSchemaChevron')">
+                            <span class="font-bold text-sm text-emeraldNeon flex items-center space-x-2">
+                                <span>TokenResponse</span>
+                                <i id="tokenSchemaChevron" class="fa-solid fa-chevron-down text-xs transition transform rotate-180"></i>
+                            </span>
+                            <button onclick="event.stopPropagation(); copySchema('tokenSchemaCode')" class="text-textMuted hover:text-white text-xs"><i class="fa-regular fa-copy"></i> Copy</button>
                         </div>
-                        <pre id="tokenSchemaCode" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted overflow-x-auto">{
+                        <pre id="tokenSchemaCode" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted overflow-x-auto transition-all">{
   "access_token": "string",
   "token_type": "string"
 }</pre>
@@ -387,6 +470,24 @@
         </main>
     </div>
 
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-charcoalCard border border-charcoalBorder rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <h3 class="text-lg font-bold text-red-400 flex items-center space-x-2">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Confirm Task Deletion</span>
+            </h3>
+            <p id="deleteModalMessage" class="text-xs text-textMuted font-mono">Are you sure you want to delete this task? This action cannot be undone.</p>
+            <div class="flex justify-end space-x-3 pt-2 border-t border-charcoalBorder">
+                <button onclick="closeDeleteModal()" class="bg-charcoalBase hover:bg-charcoalBorder border border-charcoalBorder text-textPrimary px-4 py-2 rounded text-xs font-semibold">Cancel</button>
+                <button id="confirmDeleteBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-xs font-bold">Delete Task</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Documentation Guide Modal -->
     <div id="docsModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-50 p-4">
         <div class="bg-charcoalCard border border-charcoalBorder rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
@@ -403,13 +504,54 @@
                 <ol class="list-decimal pl-5 space-y-1">
                     <li>Register a new account via Section A (<code class="text-emeraldNeon">POST /api/v1/auth/register</code>).</li>
                     <li>Login to obtain JWT token via Section A (<code class="text-emeraldNeon">POST /api/v1/auth/login</code>). The token is automatically injected into the global header bar.</li>
-                    <li>Test user profile in Section B and task CRUD operations in Section C.</li>
+                    <li>Test logout revocation via <code class="text-amberWarning">POST /api/v1/auth/logout</code>.</li>
+                    <li>Test user profile in Section B and task CRUD, filters, search, update & delete operations in Section C.</li>
                 </ol>
             </div>
             <div class="flex justify-end pt-2 border-t border-charcoalBorder">
                 <button onclick="closeDocsModal()" class="bg-emeraldNeon text-charcoalBase px-4 py-2 rounded text-xs font-bold">Close Guide</button>
             </div>
         </div>
+    </div>
+
+    <!-- AI Chat Board Widget (Floating Assistant) -->
+    <div id="aiChatWidget" class="fixed bottom-5 left-5 z-50 flex flex-col items-end">
+        <!-- Chat Window (Initially Hidden) -->
+        <div id="aiChatWindow" class="hidden mb-3 w-80 sm:w-96 bg-charcoalCard border border-charcoalBorder rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300">
+            <!-- Chat Header -->
+            <div class="bg-charcoalBase border-b border-charcoalBorder px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emeraldNeon animate-pulse"></div>
+                    <span class="text-xs font-bold text-emeraldNeon uppercase tracking-wider">DecodeLabs AI Assistant</span>
+                </div>
+                <button onclick="toggleAiChat()" class="text-textMuted hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <!-- Chat Messages Area -->
+            <div id="aiChatMessages" class="p-3 space-y-3 h-72 overflow-y-auto text-xs font-mono bg-charcoalBase/60">
+                <div class="bg-charcoalCard border border-charcoalBorder p-2.5 rounded-xl text-textPrimary space-y-1">
+                    <div class="text-[10px] text-emeraldNeon font-bold">AI Assistant</div>
+                    <div>Hello! I am your DecodeLabs Agentic Assistant. You can ask me to:</div>
+                    <ul class="list-disc pl-4 text-[11px] text-textMuted space-y-0.5">
+                        <li>"Check weather"</li>
+                        <li>"Create task [title]"</li>
+                        <li>"Register user [email]"</li>
+                        <li>"System status"</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Chat Input Bar -->
+            <div class="p-2.5 bg-charcoalCard border-t border-charcoalBorder flex space-x-2">
+                <input type="text" id="aiChatInput" onkeydown="if(event.key==='Enter') sendAiMessage()" placeholder="Ask AI Assistant or issue command..." class="flex-1 bg-charcoalBase border border-charcoalBorder rounded-lg px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                <button onclick="sendAiMessage()" class="bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase px-3 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Toggle Bubble -->
+        <button onclick="toggleAiChat()" class="bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase w-12 h-12 rounded-full shadow-2xl flex items-center justify-center font-bold text-lg transition transform hover:scale-105 cursor-pointer">
+            <i class="fa-solid fa-robot"></i>
+        </button>
     </div>
 
     <!-- JavaScript Controller Logic -->
@@ -421,31 +563,52 @@
             currentEnv = currentEnv === 'PRODUCTION' ? 'LOCAL' : 'PRODUCTION';
             document.getElementById('envBadge').textContent = `ENV: ${currentEnv}`;
             document.getElementById('metricsEnvDisplay').textContent = currentEnv;
+            showToast(`Environment switched to ${currentEnv}`, 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emeraldNeon/20 border-emeraldNeon/50 text-emeraldNeon' : 'bg-red-500/20 border-red-500/50 text-red-400';
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+            
+            toast.className = `pointer-events-auto flex items-center space-x-2 px-4 py-3 rounded-xl border ${bgClass} shadow-xl backdrop-blur text-xs font-mono transition transform translate-y-2 opacity-0 duration-300`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
         }
 
         function injectAuthToken() {
             const token = document.getElementById('globalAuthToken').value.trim();
             if (token) {
                 localStorage.setItem('access_token', token);
-                alert('JWT Bearer token successfully injected and stored in session!');
+                showToast('JWT Bearer token successfully injected and stored!', 'success');
             } else {
-                alert('Please enter a valid token.');
+                showToast('Please enter a valid token.', 'error');
             }
         }
 
         function clearAuthToken() {
             document.getElementById('globalAuthToken').value = '';
             localStorage.removeItem('access_token');
-            alert('Auth token cleared.');
+            showToast('Auth token cleared from session.', 'success');
         }
 
         function refreshSessionState() {
             const saved = localStorage.getItem('access_token');
             if (saved) {
                 document.getElementById('globalAuthToken').value = saved;
-                alert('Session restored from localStorage.');
+                showToast('Session restored from localStorage.', 'success');
             } else {
-                alert('No active session found.');
+                showToast('No active session found.', 'error');
             }
         }
 
@@ -458,28 +621,31 @@
             return headers;
         }
 
-        async function fetchCurrentUser() {
-            const token = localStorage.getItem("access_token");
-            if (!token) {
-                return; // Abort request when unauthenticated to prevent 401 log spam
-            }
+        // Helper to log actions into Section 6 Terminal Console & History
+        function logToTerminal(endpoint, status, data, latencyMs = 0) {
+            lastResponseData = data;
+            const consoleOut = document.getElementById('consoleOutput');
+            const diagnostic = document.getElementById('diagnosticPanel');
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const logHeader = `[${timestamp}] ${endpoint} -> Status: ${status} (${latencyMs}ms)\n`;
+            consoleOut.textContent = logHeader + JSON.stringify(data, null, 2) + "\n\n" + consoleOut.textContent;
+            
+            document.getElementById('metricsLatencyDisplay').textContent = `${latencyMs || 12}ms`;
+            pushHistory(endpoint, status);
 
-            const response = await fetch("/api/v1/users/me", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
-
-            if (response.status === 401) {
-                localStorage.removeItem("access_token");
+            if (status >= 400) {
+                diagnostic.innerHTML = `<span class="text-amberWarning font-bold">Error ${status}:</span> Check payload format or verify authentication header.`;
+            } else {
+                diagnostic.innerHTML = `<span class="text-emeraldNeon font-bold">Success (${status}):</span> ${endpoint} completed in ${latencyMs || 12}ms.`;
             }
-            return response.json();
         }
 
         async function testRegister() {
             const payload = document.getElementById('regPayload').value;
             const out = document.getElementById('regOutput');
             out.textContent = "Executing POST /api/v1/auth/register...\n";
+            const start = performance.now();
             try {
                 const res = await fetch('/api/v1/auth/register', {
                     method: 'POST',
@@ -487,10 +653,17 @@
                     body: payload
                 });
                 const data = await res.json();
+                const latency = Math.round(performance.now() - start);
                 out.textContent = JSON.stringify(data, null, 2);
-                pushHistory('POST /api/v1/auth/register', res.status);
+                logToTerminal('POST /api/v1/auth/register', res.status, data, latency);
+                if (res.ok) {
+                    showToast('User registered successfully!', 'success');
+                } else {
+                    showToast(`Registration failed: ${data.detail || 'Check payload'}`, 'error');
+                }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
+                showToast(`Error: ${err.message}`, 'error');
             }
         }
 
@@ -498,6 +671,7 @@
             const rawPayload = document.getElementById('loginPayload').value;
             const out = document.getElementById('loginOutput');
             out.textContent = "Executing POST /api/v1/auth/login...\n";
+            const start = performance.now();
             try {
                 let email = "user@example.com";
                 let password = "SecurePassword123!";
@@ -505,9 +679,7 @@
                     const parsed = JSON.parse(rawPayload);
                     email = parsed.email || parsed.username || email;
                     password = parsed.password || password;
-                } catch (e) {
-                    // fallback if not JSON
-                }
+                } catch (e) {}
 
                 const formData = new URLSearchParams();
                 formData.append('username', email);
@@ -520,47 +692,129 @@
                     body: formData
                 });
                 const data = await res.json();
+                const latency = Math.round(performance.now() - start);
                 out.textContent = JSON.stringify(data, null, 2);
                 if (data.access_token) {
                     document.getElementById('globalAuthToken').value = data.access_token;
                     localStorage.setItem('access_token', data.access_token);
                     out.textContent += "\n\n[SUCCESS]: JWT Token auto-injected into global header!";
+                    showToast('Login successful & JWT auto-injected!', 'success');
+                } else {
+                    showToast('Login failed: Invalid credentials', 'error');
                 }
-                pushHistory('POST /api/v1/auth/login', res.status);
+                logToTerminal('POST /api/v1/auth/login', res.status, data, latency);
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
+                showToast(`Login error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testLogout() {
+            const out = document.getElementById('logoutOutput');
+            out.textContent = "Executing POST /api/v1/auth/logout...\n";
+            const start = performance.now();
+            try {
+                const res = await fetch('/api/v1/auth/logout', {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+                const data = await res.json();
+                const latency = Math.round(performance.now() - start);
+                out.textContent = JSON.stringify(data, null, 2);
+                clearAuthToken();
+                logToTerminal('POST /api/v1/auth/logout', res.status, data, latency);
+                showToast('Successfully logged out and token revoked.', 'success');
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                showToast(`Logout error: ${err.message}`, 'error');
             }
         }
 
         async function testGetUserMe() {
             const out = document.getElementById('userMeOutput');
             out.textContent = "Executing GET /api/v1/users/me...\n";
+            const start = performance.now();
             try {
                 const res = await fetch('/api/v1/users/me', {
                     method: 'GET',
                     headers: getAuthHeaders()
                 });
                 const data = await res.json();
+                const latency = Math.round(performance.now() - start);
                 out.textContent = JSON.stringify(data, null, 2);
-                pushHistory('GET /api/v1/users/me', res.status);
+                logToTerminal('GET /api/v1/users/me', res.status, data, latency);
+                if (res.ok) {
+                    showToast('User profile fetched successfully!', 'success');
+                } else {
+                    showToast('Failed to fetch profile: Unauthorized', 'error');
+                }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
+                showToast(`Error: ${err.message}`, 'error');
             }
         }
 
         async function testListTasks() {
+            const q = document.getElementById('taskSearchQuery').value.trim();
+            const statusFilter = document.getElementById('taskStatusFilter').value;
+            const priorityFilter = document.getElementById('taskPriorityFilter').value;
+
+            let url = '/api/v1/tasks/?';
+            const params = new URLSearchParams();
+            if (q) params.append('q', q);
+            if (statusFilter) params.append('status_filter', statusFilter);
+            if (priorityFilter) params.append('priority', priorityFilter);
+            url += params.toString();
+
             const out = document.getElementById('tasksListOutput');
-            out.textContent = "Executing GET /api/v1/tasks/...\n";
+            const cardsContainer = document.getElementById('tasksListCards');
+            const countBadge = document.getElementById('taskCountBadge');
+            
+            cardsContainer.innerHTML = '<div class="text-xs text-textMuted font-mono italic p-4 text-center">Loading tasks...</div>';
+            const start = performance.now();
             try {
-                const res = await fetch('/api/v1/tasks/', {
+                const res = await fetch(url, {
                     method: 'GET',
                     headers: getAuthHeaders()
                 });
                 const data = await res.json();
+                const latency = Math.round(performance.now() - start);
                 out.textContent = JSON.stringify(data, null, 2);
-                pushHistory('GET /api/v1/tasks/', res.status);
+                logToTerminal(url, res.status, data, latency);
+
+                if (Array.isArray(data)) {
+                    countBadge.textContent = `${data.length} tasks found`;
+                    if (data.length === 0) {
+                        cardsContainer.innerHTML = '<div class="text-xs text-textMuted font-mono italic p-4 text-center">No tasks match the filter criteria.</div>';
+                    } else {
+                        cardsContainer.innerHTML = '';
+                        data.forEach(task => {
+                            const statusColor = task.status === 'completed' ? 'text-emeraldNeon bg-emeraldNeon/10 border-emeraldNeon/30' : (task.status === 'in_progress' ? 'text-blue-400 bg-blue-500/10 border-blue-500/30' : 'text-amberWarning bg-amberWarning/10 border-amberWarning/40');
+                            const priorityColor = task.priority === 'high' ? 'text-red-400 bg-red-500/10 border-red-500/30' : (task.priority === 'medium' ? 'text-amberWarning bg-amberWarning/10 border-amberWarning/30' : 'text-textMuted bg-charcoalBase border-charcoalBorder');
+                            
+                            const card = document.createElement('div');
+                            card.className = 'bg-charcoalBase border border-charcoalBorder rounded-lg p-3.5 flex items-center justify-between space-x-4 shadow';
+                            card.innerHTML = `
+                                <div class="space-y-1 overflow-hidden">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs font-bold text-white font-mono">#${task.id} - ${escapeHtml(task.title)}</span>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${statusColor}">${task.status}</span>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${priorityColor}">${task.priority}</span>
+                                    </div>
+                                    <p class="text-xs text-textMuted truncate">${escapeHtml(task.description || 'No description')}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 shrink-0">
+                                    <button onclick="populateUpdateForm(${task.id}, '${escapeHtml(task.title)}', '${escapeHtml(task.description || '')}', '${task.status}', '${task.priority}')" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2.5 py-1 rounded text-xs font-semibold">Edit</button>
+                                    <button onclick="openDeleteModal(${task.id})" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-2.5 py-1 rounded text-xs font-semibold">Delete</button>
+                                </div>
+                            `;
+                            cardsContainer.appendChild(card);
+                        });
+                    }
+                }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
+                cardsContainer.innerHTML = `<div class="text-xs text-red-400 font-mono p-4">Error loading tasks: ${err.message}</div>`;
             }
         }
 
@@ -568,6 +822,7 @@
             const payload = document.getElementById('taskCreatePayload').value;
             const out = document.getElementById('taskCreateOutput');
             out.textContent = "Executing POST /api/v1/tasks/...\n";
+            const start = performance.now();
             try {
                 const res = await fetch('/api/v1/tasks/', {
                     method: 'POST',
@@ -575,44 +830,123 @@
                     body: payload
                 });
                 const data = await res.json();
+                const latency = Math.round(performance.now() - start);
                 out.textContent = JSON.stringify(data, null, 2);
-                pushHistory('POST /api/v1/tasks/', res.status);
+                logToTerminal('POST /api/v1/tasks/', res.status, data, latency);
+                if (res.ok) {
+                    showToast('Task created successfully!', 'success');
+                    testListTasks();
+                } else {
+                    showToast(`Failed to create task: ${data.detail || 'Check payload'}`, 'error');
+                }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
+                showToast(`Error: ${err.message}`, 'error');
             }
         }
 
+        function populateUpdateForm(id, title, description, status, priority) {
+            document.getElementById('updateTaskId').value = id;
+            document.getElementById('taskUpdatePayload').value = JSON.stringify({
+                title: title,
+                description: description,
+                status: status,
+                priority: priority
+            }, null, 2);
+            window.location.hash = '#section-tasks';
+            showToast(`Task #${id} loaded into Update form.`, 'success');
+        }
+
+        async function testUpdateTask() {
+            const taskId = document.getElementById('updateTaskId').value.trim();
+            const payload = document.getElementById('taskUpdatePayload').value;
+            const out = document.getElementById('taskUpdateOutput');
+            
+            if (!taskId) {
+                showToast('Please provide a valid Task ID to update.', 'error');
+                return;
+            }
+
+            out.textContent = `Executing PATCH /api/v1/tasks/${taskId}...\n`;
+            const start = performance.now();
+            try {
+                const res = await fetch(`/api/v1/tasks/${taskId}`, {
+                    method: 'PATCH',
+                    headers: getAuthHeaders(),
+                    body: payload
+                });
+                const data = await res.json();
+                const latency = Math.round(performance.now() - start);
+                out.textContent = JSON.stringify(data, null, 2);
+                logToTerminal(`PATCH /api/v1/tasks/${taskId}`, res.status, data, latency);
+                if (res.ok) {
+                    showToast(`Task #${taskId} updated successfully!`, 'success');
+                    testListTasks();
+                } else {
+                    showToast(`Failed to update task: ${data.detail || 'Check payload'}`, 'error');
+                }
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                showToast(`Error: ${err.message}`, 'error');
+            }
+        }
+
+        let pendingDeleteId = null;
+        function openDeleteModal(taskId) {
+            pendingDeleteId = taskId;
+            document.getElementById('deleteModalMessage').textContent = `Are you sure you want to delete task #${taskId}? This action cannot be undone.`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteId = null;
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        document.getElementById('confirmDeleteBtn').onclick = async () => {
+            if (!pendingDeleteId) return;
+            const taskId = pendingDeleteId;
+            closeDeleteModal();
+            const start = performance.now();
+            try {
+                const res = await fetch(`/api/v1/tasks/${taskId}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                const latency = Math.round(performance.now() - start);
+                let data = { message: "Task successfully deleted (204 No Content)" };
+                if (res.status !== 204) {
+                    try { data = await res.json(); } catch(e){}
+                }
+                logToTerminal(`DELETE /api/v1/tasks/${taskId}`, res.status, data, latency);
+                showToast(`Task #${taskId} deleted successfully!`, 'success');
+                testListTasks();
+            } catch (err) {
+                showToast(`Error deleting task: ${err.message}`, 'error');
+            }
+        };
+
         async function executeConsoleRequest() {
             const endpoint = document.getElementById('consoleEndpoint').value.trim();
-            const out = document.getElementById('consoleOutput');
-            const diagnostic = document.getElementById('diagnosticPanel');
-            out.textContent = `Executing GET ${endpoint}...\n`;
             const start = performance.now();
             try {
                 const res = await fetch(endpoint, { headers: getAuthHeaders() });
                 const data = await res.json();
-                lastResponseData = data;
                 const latency = Math.round(performance.now() - start);
-                out.textContent += `Status: ${res.status} ${res.statusText} (${latency}ms)\n\n` + JSON.stringify(data, null, 2);
-                pushHistory(endpoint, res.status);
-
-                document.getElementById('metricsLatencyDisplay').textContent = `${latency}ms`;
-                if (res.status >= 400) {
-                    diagnostic.innerHTML = `<span class="text-amberWarning font-bold">Error ${res.status}:</span> Check payload format or verify authentication header.`;
-                } else {
-                    diagnostic.innerHTML = `<span class="text-emeraldNeon font-bold">Success (${res.status}):</span> Request completed successfully in ${latency}ms.`;
-                }
+                logToTerminal(endpoint, res.status, data, latency);
+                showToast(`Console request to ${endpoint} completed (${res.status})`, 'success');
             } catch (err) {
-                out.textContent += `Error: ${err.message}`;
-                diagnostic.innerHTML = `<span class="text-red-400 font-bold">Network Error:</span> ${err.message}`;
+                logToTerminal(endpoint, 500, { error: err.message }, 0);
+                showToast(`Console request failed: ${err.message}`, 'error');
             }
         }
 
         function copyAsCurl() {
             const endpoint = document.getElementById('consoleEndpoint').value.trim();
-            const curl = `curl -X GET "http://localhost:8000${endpoint}" -H "Accept: application/json"`;
+            const token = document.getElementById('globalAuthToken').value.trim() || 'YOUR_JWT_TOKEN';
+            const curl = `curl -X GET "http://localhost:8000${endpoint}" -H "Accept: application/json" -H "Authorization: Bearer ${token}"`;
             navigator.clipboard.writeText(curl);
-            alert('cURL command copied to clipboard!');
+            showToast('cURL command copied to clipboard!', 'success');
         }
 
         function downloadJson() {
@@ -622,6 +956,7 @@
             a.href = url;
             a.download = 'response_export.json';
             a.click();
+            showToast('Response JSON downloaded successfully!', 'success');
         }
 
         function pushHistory(endpoint, status) {
@@ -631,29 +966,130 @@
             const statusColor = status < 400 ? 'text-emeraldNeon' : 'text-amberWarning';
             li.innerHTML = `<span>${endpoint}</span><span class="${statusColor}">${status}</span>`;
             list.prepend(li);
-            if (list.children.length > 10) {
+            if (list.children.length > 12) {
                 list.removeChild(list.lastChild);
             }
         }
 
         function clearHistory() {
             document.getElementById('historyList').innerHTML = '';
+            showToast('Request history cleared.', 'success');
         }
 
         function copySchema(id) {
             const text = document.getElementById(id).textContent;
             navigator.clipboard.writeText(text);
-            alert('Schema copied to clipboard!');
+            showToast('Pydantic schema copied to clipboard!', 'success');
+        }
+
+        function toggleSchemaCollapse(preId, chevronId) {
+            const preEl = document.getElementById(preId);
+            const chevronEl = document.getElementById(chevronId);
+            if (preEl.classList.contains('hidden')) {
+                preEl.classList.remove('hidden');
+                chevronEl.classList.remove('rotate-180');
+            } else {
+                preEl.classList.add('hidden');
+                chevronEl.classList.add('rotate-180');
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
         function openDocsModal() { document.getElementById('docsModal').classList.remove('hidden'); }
         function closeDocsModal() { document.getElementById('docsModal').classList.add('hidden'); }
+
+        function toggleAiChat() {
+            const win = document.getElementById('aiChatWindow');
+            win.classList.toggle('hidden');
+            if (!win.classList.contains('hidden')) {
+                document.getElementById('aiChatInput').focus();
+            }
+        }
+
+        async function sendAiMessage() {
+            const input = document.getElementById('aiChatInput');
+            const prompt = input.value.trim();
+            if (!prompt) return;
+
+            const messagesContainer = document.getElementById('aiChatMessages');
+            
+            const userMsg = document.createElement('div');
+            userMsg.className = 'bg-emeraldNeon/10 border border-emeraldNeon/30 p-2.5 rounded-xl text-textPrimary ml-6 space-y-1';
+            userMsg.innerHTML = `<div class="text-[10px] text-emeraldNeon font-bold text-right">You</div><div class="text-right">${escapeHtml(prompt)}</div>`;
+            messagesContainer.appendChild(userMsg);
+            
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            const loadingMsg = document.createElement('div');
+            loadingMsg.id = 'aiLoadingMsg';
+            loadingMsg.className = 'bg-charcoalCard border border-charcoalBorder p-2.5 rounded-xl text-textMuted italic';
+            loadingMsg.textContent = 'AI Assistant is thinking & executing action...';
+            messagesContainer.appendChild(loadingMsg);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            try {
+                const res = await fetch('/api/v1/chat/assistant', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                const data = await res.json();
+                loadingMsg.remove();
+
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'bg-charcoalCard border border-charcoalBorder p-2.5 rounded-xl text-textPrimary space-y-1 mr-6';
+                aiMsg.innerHTML = `
+                    <div class="text-[10px] text-emeraldNeon font-bold flex justify-between">
+                        <span>AI Assistant</span>
+                        <span class="text-amberWarning font-mono">[${data.action_executed || 'reply'}]</span>
+                    </div>
+                    <div>${escapeHtml(data.reply)}</div>
+                `;
+                messagesContainer.appendChild(aiMsg);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                showToast(`AI Action executed: ${data.action_executed}`, 'success');
+
+                if (data.action_executed === 'create_task') {
+                    testListTasks();
+                }
+            } catch (err) {
+                loadingMsg.remove();
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'bg-red-500/20 border border-red-500/40 p-2.5 rounded-xl text-red-400';
+                errorMsg.textContent = `Error communicating with AI Assistant: ${err.message}`;
+                messagesContainer.appendChild(errorMsg);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        async function pollHealthStatus() {
+            try {
+                const start = performance.now();
+                const res = await fetch('/health');
+                const latency = Math.round(performance.now() - start);
+                if (res.ok) {
+                    document.getElementById('metricsLatencyDisplay').textContent = `${latency}ms`;
+                }
+            } catch (e) {}
+        }
+        setInterval(pollHealthStatus, 10000);
 
         window.onload = () => {
             const saved = localStorage.getItem('access_token');
             if (saved) {
                 document.getElementById('globalAuthToken').value = saved;
             }
+            testListTasks();
         };
     </script>
 </body>
