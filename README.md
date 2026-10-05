@@ -121,6 +121,29 @@ Sentinel Auth Vault implements a strict, centralized global exception handling m
 
 ---
 
+## ⚡ Rate Limiting Policy & Redis Storage Mechanics
+To protect against brute-force attacks and abuse, Sentinel Auth Vault enforces strict rate limiting via high-performance sliding window tracking:
+- **Authentication Routes (`/api/v1/auth/*`)**: Strictly limited to **5 requests per minute** per client IP.
+- **Resource / Standard Routes**: Limited to **60 requests per minute** per client IP.
+
+### Response Rate Limit Headers
+Every response includes rate limit telemetry headers:
+- `X-RateLimit-Limit`: Maximum allowed requests within the current window.
+- `X-RateLimit-Remaining`: Remaining request quota in the current window.
+- `Retry-After`: Seconds to wait before retrying (included only upon 429 response).
+
+### Rate Limit Exceeded Response (`429 Too Many Requests`)
+```json
+{
+  "error_code": "RATE_LIMIT_EXCEEDED",
+  "message": "Rate limit exceeded. Maximum 5 requests per minute allowed. Retry after 58 seconds.",
+  "detail": "Rate limit exceeded. Maximum 5 requests per minute allowed. Retry after 58 seconds.",
+  "timestamp": "2026-10-05T14:32:10.000000+00:00"
+}
+```
+
+---
+
 ## 📚 API Specification & Documentation
 Sentinel Auth Vault provides rich, production-grade OpenAPI spec coverage across all routes (`/docs` and `/redoc`), adhering strictly to RESTful conventions and standardized Pydantic error payloads.
 

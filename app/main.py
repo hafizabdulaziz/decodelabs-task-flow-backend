@@ -14,6 +14,7 @@ from contextlib import asynccontextmanager
 from app.config import settings
 from app.services.http_client import http_manager
 from app.schemas.error import ErrorResponse
+from app.core.rate_limit import rate_limit_middleware
 from app.api.v1.auth import router as auth_router
 from app.api.v1.users import router as users_router
 from app.api.v1.tasks import router as tasks_router
@@ -77,6 +78,10 @@ async def add_process_time_header(request: Request, call_next):
     response.headers["X-Process-Time"] = f"{process_time:.4f}s"
     logger.info(f"Method: {request.method} Path: {request.url.path} Status: {response.status_code} Duration: {process_time:.4f}s")
     return response
+
+
+# Rate Limiting Middleware
+app.middleware("http")(rate_limit_middleware)
 
 
 # 8.1 Custom Exception Handlers & Standardized API Response

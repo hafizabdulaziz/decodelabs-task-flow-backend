@@ -10,6 +10,7 @@ from sqlalchemy.pool import StaticPool
 from app.main import app
 from app.db.base import Base
 from app.db.session import get_db
+from app.core.rate_limit import _RATE_LIMIT_STORE
 
 # Use in-memory SQLite for testing
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
@@ -46,8 +47,10 @@ app.dependency_overrides[get_db] = override_get_db
 
 @pytest.fixture(autouse=True)
 async def setup_database():
+    _RATE_LIMIT_STORE.clear()
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
+    _RATE_LIMIT_STORE.clear()
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
