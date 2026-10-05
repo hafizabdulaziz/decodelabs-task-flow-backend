@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     APP_ENV: str = "development"
+    EXTERNAL_API_KEY: str = "mock-api-key"
+    EXTERNAL_API_BASE_URL: str = "https://api.open-meteo.com/v1"
+    EXTERNAL_API_TIMEOUT: float = 5.0
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -11,6 +11,8 @@ python-multipart==0.0.20
 pytest==8.3.4
 pytest-asyncio==0.25.3
 httpx==0.28.1
+respx==0.22.0
 ruff==0.9.5
 mypy==1.15.0
 aiosqlite==0.22.1
+psutil==6.1.1
