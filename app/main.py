@@ -54,7 +54,7 @@ async def custom_api_control_center():
     """
     Custom Production API Control Center Dashboard.
     """
-    with open("app/templates/dashboard.html", "r", encoding="utf-8") as f:
+    with open("app/templates/index.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
 

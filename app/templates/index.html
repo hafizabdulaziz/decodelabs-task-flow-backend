@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decodelabs Task Flow - API Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        charcoalBase: '#0D0E11',
+                        charcoalCard: '#1A1D24',
+                        charcoalBorder: '#2A2E3B',
+                        emeraldNeon: '#10B981',
+                        emeraldGlow: '#00E676',
+                        amberWarning: '#F59E0B',
+                        textPrimary: '#FFFFFF',
+                        textMuted: '#9CA3AF',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-charcoalBase text-textPrimary font-sans min-h-screen flex flex-col">
+    
+    <!-- Top Navigation Bar (Streamlined) -->
+    <header class="bg-charcoalCard border-b border-charcoalBorder px-6 py-3 flex items-center justify-between shrink-0 shadow-lg z-30">
+        <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 rounded-full bg-emeraldNeon animate-pulse"></div>
+                <span class="text-xs uppercase tracking-wider text-emeraldNeon font-bold">API Gateway: Online</span>
+            </div>
+            <div class="h-4 w-[1px] bg-charcoalBorder"></div>
+            <button onclick="toggleEnvironment()" id="envBadge" class="px-2.5 py-1 bg-amberWarning/20 text-amberWarning border border-amberWarning/40 text-xs font-extrabold rounded-md cursor-pointer hover:bg-amberWarning/30 transition">ENV: PRODUCTION</button>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <!-- Quick Auth Bar Injection -->
+            <div class="flex items-center space-x-2 bg-charcoalBase border border-charcoalBorder px-3 py-1.5 rounded-lg">
+                <i class="fa-solid fa-key text-amberWarning text-xs"></i>
+                <input type="password" id="globalAuthToken" placeholder="Paste Bearer JWT..." class="bg-transparent border-none text-xs text-textPrimary focus:outline-none w-44 font-mono">
+                <button onclick="injectAuthToken()" class="bg-emeraldNeon/20 text-emeraldNeon border border-emeraldNeon/40 px-2 py-0.5 rounded text-xs font-bold hover:bg-emeraldNeon/30">Inject</button>
+                <button onclick="clearAuthToken()" class="text-textMuted hover:text-red-400 text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <button onclick="openDocsModal()" class="bg-charcoalCard hover:bg-charcoalBorder border border-charcoalBorder px-3 py-1.5 rounded-lg text-xs font-semibold text-textPrimary transition flex items-center space-x-1.5">
+                <i class="fa-solid fa-book-open text-emeraldNeon"></i>
+                <span>API Guide</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-6 space-y-10">
+        
+        <!-- Header Banner -->
+        <div class="bg-charcoalCard border border-charcoalBorder rounded-2xl p-6 shadow-xl flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-black tracking-tight text-white flex items-center space-x-3">
+                    <i class="fa-solid fa-layer-group text-emeraldNeon"></i>
+                    <span>Decodelabs Task Flow API - Control Center</span>
+                </h1>
+                <p class="text-xs text-textMuted mt-1">Production-grade streamlined enterprise API workspace.</p>
+            </div>
+        </div>
+
+        <!-- PANEL 1: AUTHENTICATION -->
+        <section id="section-auth" class="space-y-4">
+            <div class="flex items-center justify-between border-b border-charcoalBorder pb-2">
+                <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-shield-halved text-amberWarning"></i>
+                    <span>Panel 1: Authentication (Register & Login)</span>
+                </h2>
+                <span class="text-xs font-mono bg-amberWarning/20 text-amberWarning px-2 py-0.5 rounded">Security Suite</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Register Card -->
+                <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 bg-emeraldNeon text-charcoalBase text-xs font-extrabold rounded font-mono">POST</span>
+                        <span class="text-xs font-mono text-textMuted">/api/v1/auth/register</span>
+                    </div>
+                    <p class="text-xs text-textMuted">Register a new user account with secure password hashing.</p>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-semibold text-textMuted">JSON Payload</label>
+                        <textarea id="regPayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-24 focus:outline-none focus:border-emeraldNeon">{
+  "email": "user@example.com",
+  "password": "SecurePassword123!",
+  "full_name": "Test User"
+}</textarea>
+                        <button onclick="testRegister()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2 rounded text-xs transition">Execute Register</button>
+                    </div>
+                    <pre id="regOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-28 overflow-y-auto">// Response output...</pre>
+                </div>
+
+                <!-- Login Card -->
+                <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 bg-emeraldNeon text-charcoalBase text-xs font-extrabold rounded font-mono">POST</span>
+                        <span class="text-xs font-mono text-textMuted">/api/v1/auth/login</span>
+                    </div>
+                    <p class="text-xs text-textMuted">Authenticate user credentials and obtain signed JWT Bearer token.</p>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-semibold text-textMuted">JSON Payload</label>
+                        <textarea id="loginPayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-24 focus:outline-none focus:border-emeraldNeon">{
+  "email": "user@example.com",
+  "password": "SecurePassword123!"
+}</textarea>
+                        <button onclick="testLogin()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2 rounded text-xs transition">Execute Login & Auto-Inject</button>
+                    </div>
+                    <pre id="loginOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-28 overflow-y-auto">// Response output...</pre>
+                </div>
+
+                <!-- Logout Card -->
+                <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 bg-amberWarning text-charcoalBase text-xs font-extrabold rounded font-mono">POST</span>
+                        <span class="text-xs font-mono text-textMuted">/api/v1/auth/logout</span>
+                    </div>
+                    <p class="text-xs text-textMuted">Revoke active session token and clear local credentials.</p>
+                    <div class="space-y-2 pt-6">
+                        <button onclick="testLogout()" class="w-full bg-amberWarning hover:bg-amber-600 text-charcoalBase font-bold py-2.5 rounded text-xs transition">Execute Logout</button>
+                    </div>
+                    <pre id="logoutOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-28 overflow-y-auto">// Logout response...</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANEL 2: TASK MANAGEMENT -->
+        <section id="section-tasks" class="space-y-6">
+            <div class="flex items-center justify-between border-b border-charcoalBorder pb-2">
+                <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-emeraldNeon"></i>
+                    <span>Panel 2: Task Management (CRUD Operations)</span>
+                </h2>
+                <span class="text-xs font-mono bg-emeraldNeon/20 text-emeraldNeon px-2 py-0.5 rounded">Core Domain</span>
+            </div>
+
+            <!-- Task Filters & Search Bar -->
+            <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="text-[11px] font-semibold text-textMuted block mb-1">Search Tasks</label>
+                    <input type="text" id="taskSearchQuery" oninput="testListTasks()" placeholder="Search title/description..." class="w-full bg-charcoalBase border border-charcoalBorder rounded px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                </div>
+                <div>
+                    <label class="text-[11px] font-semibold text-textMuted block mb-1">Filter by Status</label>
+                    <select id="taskStatusFilter" onchange="testListTasks()" class="w-full bg-charcoalBase border border-charcoalBorder rounded px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                        <option value="">All Statuses</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[11px] font-semibold text-textMuted block mb-1">Filter by Priority</label>
+                    <select id="taskPriorityFilter" onchange="testListTasks()" class="w-full bg-charcoalBase border border-charcoalBorder rounded px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                        <option value="">All Priorities</option>
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Create Task Card -->
+                <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 bg-emeraldNeon text-charcoalBase text-xs font-extrabold rounded font-mono">POST</span>
+                        <span class="text-xs font-mono text-textMuted">/api/v1/tasks/</span>
+                    </div>
+                    <p class="text-xs text-textMuted">Create a new task with title, description, status, and priority.</p>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-semibold text-textMuted">JSON Payload</label>
+                        <textarea id="taskCreatePayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-28 focus:outline-none focus:border-emeraldNeon">{
+  "title": "Complete Project Delivery",
+  "description": "Finish backend and frontend UI cleanup",
+  "status": "pending",
+  "priority": "high"
+}</textarea>
+                        <button onclick="testCreateTask()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2 rounded text-xs transition">Execute Create Task</button>
+                    </div>
+                    <pre id="taskCreateOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-24 overflow-y-auto">// Create response...</pre>
+                </div>
+
+                <!-- Update Task Card -->
+                <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 bg-blue-500 text-white text-xs font-extrabold rounded font-mono">PATCH</span>
+                            <input type="number" id="updateTaskId" placeholder="Task ID" class="w-24 bg-charcoalBase border border-charcoalBorder rounded px-2 py-1 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                        </div>
+                        <span class="text-xs font-mono text-textMuted">/api/v1/tasks/{id}</span>
+                    </div>
+                    <p class="text-xs text-textMuted">Update an existing task properties partially.</p>
+                    <div class="space-y-2">
+                        <label class="text-[11px] font-semibold text-textMuted">JSON Payload</label>
+                        <textarea id="taskUpdatePayload" class="w-full bg-charcoalBase border border-charcoalBorder rounded p-2.5 text-xs font-mono text-textPrimary h-24 focus:outline-none focus:border-emeraldNeon">{
+  "title": "Updated Task Title",
+  "status": "completed",
+  "priority": "medium"
+}</textarea>
+                        <button onclick="testUpdateTask()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-xs transition">Execute Update Task</button>
+                    </div>
+                    <pre id="taskUpdateOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-24 overflow-y-auto">// Update response...</pre>
+                </div>
+            </div>
+
+            <!-- Task List Display -->
+            <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <h3 class="text-sm font-bold text-white">Task Management Stream</h3>
+                        <span id="taskCountBadge" class="text-xs font-mono bg-emeraldNeon/10 text-emeraldNeon px-2 py-0.5 rounded">0 tasks found</span>
+                    </div>
+                    <button onclick="testListTasks()" class="text-xs text-emeraldNeon hover:underline flex items-center space-x-1">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span>Refresh List</span>
+                    </button>
+                </div>
+                <div id="tasksListCards" class="space-y-3 max-h-96 overflow-y-auto pr-2">
+                    <div class="text-xs text-textMuted font-mono italic p-4 text-center">Loading tasks...</div>
+                </div>
+                <pre id="tasksListOutput" class="hidden bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-36 overflow-y-auto">// Raw task list response...</pre>
+            </div>
+        </section>
+
+        <!-- PANEL 3: THIRD-PARTY WEATHER INTEGRATION (FACADE DEMO) -->
+        <section id="section-weather" class="space-y-4">
+            <div class="flex items-center justify-between border-b border-charcoalBorder pb-2">
+                <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+                    <i class="fa-solid fa-cloud-sun text-emeraldNeon"></i>
+                    <span>Panel 3: Third-Party Weather Integration (Facade Demo)</span>
+                </h2>
+                <span class="text-xs font-mono bg-emeraldNeon/20 text-emeraldNeon px-2 py-0.5 rounded">External Facade</span>
+            </div>
+
+            <div class="bg-charcoalCard border border-charcoalBorder rounded-xl p-5 space-y-4 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <span class="px-2 py-0.5 bg-emeraldNeon text-charcoalBase text-xs font-extrabold rounded font-mono">GET</span>
+                    <span class="text-xs font-mono text-textMuted">/api/v1/external/weather</span>
+                </div>
+                <p class="text-xs text-textMuted">Fetch sanitized external weather data via the Backend Facade proxy (Open-Meteo Integration with Shield & Translator).</p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[11px] font-semibold text-textMuted block mb-1">Latitude</label>
+                        <input type="number" id="weatherLat" value="52.52" step="0.01" class="w-full bg-charcoalBase border border-charcoalBorder rounded px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-semibold text-textMuted block mb-1">Longitude</label>
+                        <input type="number" id="weatherLon" value="13.41" step="0.01" class="w-full bg-charcoalBase border border-charcoalBorder rounded px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                    </div>
+                </div>
+
+                <button onclick="testFetchWeather()" class="w-full bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase font-bold py-2.5 rounded text-xs transition">Execute Weather Facade Request</button>
+                <pre id="weatherOutput" class="bg-charcoalBase border border-charcoalBorder rounded p-3 text-[11px] font-mono text-textMuted h-36 overflow-y-auto">// Weather response output...</pre>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+    <!-- Task Deletion Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-charcoalCard border border-charcoalBorder rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <h3 class="text-lg font-bold text-red-400 flex items-center space-x-2">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Confirm Task Deletion</span>
+            </h3>
+            <p id="deleteModalMessage" class="text-xs text-textMuted font-mono">Are you sure you want to delete this task? This action cannot be undone.</p>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="closeDeleteModal()" class="bg-charcoalBase hover:bg-charcoalBorder border border-charcoalBorder text-textPrimary px-4 py-2 rounded text-xs font-semibold">Cancel</button>
+                <button id="confirmDeleteBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded text-xs font-bold">Delete Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentation Guide Modal -->
+    <div id="docsModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center z-50 p-4">
+        <div class="bg-charcoalCard border border-charcoalBorder rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-charcoalBorder pb-3">
+                <h3 class="text-lg font-bold text-emeraldNeon flex items-center space-x-2">
+                    <i class="fa-solid fa-book"></i>
+                    <span>Embedded API Documentation & Guide</span>
+                </h3>
+                <button onclick="closeDocsModal()" class="text-textMuted hover:text-white font-bold text-lg">&times;</button>
+            </div>
+            <div class="text-xs text-textMuted space-y-3 font-mono leading-relaxed max-h-96 overflow-y-auto">
+                <p class="text-textPrimary"><strong>Decodelabs Task Flow API</strong> is engineered with FastAPI, Async SQLAlchemy, and PostgreSQL.</p>
+                <p><strong>Testing Workflow:</strong></p>
+                <ol class="list-decimal pl-5 space-y-1">
+                    <li>Register a new account via Panel 1 (<code class="text-emeraldNeon">POST /api/v1/auth/register</code>).</li>
+                    <li>Login to obtain JWT token via Panel 1 (<code class="text-emeraldNeon">POST /api/v1/auth/login</code>). The token is automatically injected into the global header bar.</li>
+                    <li>Test task CRUD operations in Panel 2.</li>
+                    <li>Test external weather integration in Panel 3.</li>
+                    <li>Use AI Chat Assistant widget at bottom-left for natural language control.</li>
+                </ol>
+            </div>
+            <div class="flex justify-end pt-2 border-t border-charcoalBorder">
+                <button onclick="closeDocsModal()" class="bg-emeraldNeon text-charcoalBase px-4 py-2 rounded text-xs font-bold">Close Guide</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL 4: AI CHAT ASSISTANT (FLOATING WIDGET) -->
+    <div id="aiChatWidget" class="fixed bottom-5 left-5 z-50 flex flex-col items-end">
+        <!-- Chat Window (Initially Hidden) -->
+        <div id="aiChatWindow" class="hidden mb-3 w-80 sm:w-96 bg-charcoalCard border border-charcoalBorder rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-300">
+            <!-- Chat Header -->
+            <div class="bg-charcoalBase border-b border-charcoalBorder px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-emeraldNeon animate-pulse"></div>
+                    <span class="text-xs font-bold text-emeraldNeon uppercase tracking-wider">DecodeLabs AI Assistant</span>
+                </div>
+                <button onclick="toggleAiChat()" class="text-textMuted hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <!-- Chat Messages Area -->
+            <div id="aiChatMessages" class="p-3 space-y-3 h-72 overflow-y-auto text-xs font-mono bg-charcoalBase/60">
+                <div class="bg-charcoalCard border border-charcoalBorder p-2.5 rounded-xl text-textPrimary space-y-1">
+                    <div class="text-[10px] text-emeraldNeon font-bold">AI Assistant</div>
+                    <div>Hello! I am your DecodeLabs Agentic Assistant. You can ask me to:</div>
+                    <ul class="list-disc pl-4 text-[11px] text-textMuted space-y-0.5">
+                        <li>"Check weather"</li>
+                        <li>"Create task [title]"</li>
+                        <li>"Register user [email]"</li>
+                        <li>"System status"</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Chat Input Bar -->
+            <div class="p-2.5 bg-charcoalCard border-t border-charcoalBorder flex space-x-2">
+                <input type="text" id="aiChatInput" onkeydown="if(event.key==='Enter') sendAiMessage()" placeholder="Ask AI Assistant or issue command..." class="flex-1 bg-charcoalBase border border-charcoalBorder rounded-lg px-3 py-2 text-xs font-mono text-textPrimary focus:outline-none focus:border-emeraldNeon">
+                <button onclick="sendAiMessage()" class="bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase px-3 py-2 rounded-lg text-xs font-bold transition flex items-center justify-center">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Toggle Bubble -->
+        <button onclick="toggleAiChat()" class="bg-emeraldNeon hover:bg-emeraldGlow text-charcoalBase w-12 h-12 rounded-full shadow-2xl flex items-center justify-center font-bold text-lg transition transform hover:scale-105 cursor-pointer">
+            <i class="fa-solid fa-robot"></i>
+        </button>
+    </div>
+
+    <!-- JavaScript Controller Logic -->
+    <script>
+        let currentEnv = 'PRODUCTION';
+
+        function toggleEnvironment() {
+            currentEnv = currentEnv === 'PRODUCTION' ? 'LOCAL' : 'PRODUCTION';
+            document.getElementById('envBadge').textContent = `ENV: ${currentEnv}`;
+            showToast(`Environment switched to ${currentEnv}`, 'success');
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emeraldNeon/20 border-emeraldNeon/50 text-emeraldNeon' : 'bg-red-500/20 border-red-500/50 text-red-400';
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+            
+            toast.className = `pointer-events-auto flex items-center space-x-2 px-4 py-3 rounded-xl border ${bgClass} shadow-xl backdrop-blur text-xs font-mono transition transform translate-y-2 opacity-0 duration-300`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"><span>${escapeHtml(message)}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function injectAuthToken() {
+            const token = document.getElementById('globalAuthToken').value.trim();
+            if (token) {
+                localStorage.setItem('access_token', token);
+                showToast('JWT Bearer token successfully injected and stored!', 'success');
+            } else {
+                showToast('Please enter a valid token.', 'error');
+            }
+        }
+
+        function clearAuthToken() {
+            document.getElementById('globalAuthToken').value = '';
+            localStorage.removeItem('access_token');
+            showToast('Auth token cleared from session.', 'success');
+        }
+
+        function getAuthHeaders() {
+            const token = document.getElementById('globalAuthToken').value.trim() || localStorage.getItem('access_token');
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            return headers;
+        }
+
+        async function testRegister() {
+            const payload = document.getElementById('regPayload').value;
+            const out = document.getElementById('regOutput');
+            out.textContent = "Executing POST /api/v1/auth/register...\n";
+            try {
+                const res = await fetch('/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload
+                });
+                const data = await res.json();
+                out.textContent = JSON.stringify(data, null, 2);
+                if (res.ok) {
+                    showToast('User registered successfully!', 'success');
+                } else {
+                    showToast(`Registration failed: ${data.detail || 'Check payload'}`, 'error');
+                }
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                showToast(`Error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            const rawPayload = document.getElementById('loginPayload').value;
+            const out = document.getElementById('loginOutput');
+            out.textContent = "Executing POST /api/v1/auth/login...\n";
+            try {
+                let email = "user@example.com";
+                let password = "SecurePassword123!";
+                try {
+                    const parsed = JSON.parse(rawPayload);
+                    email = parsed.email || parsed.username || email;
+                    password = parsed.password || password;
+                } catch (e) {}
+
+                const formData = new URLSearchParams();
+                formData.append('username', email);
+                formData.append('password', password);
+                formData.append('grant_type', 'password');
+
+                const res = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                });
+                const data = await res.json();
+                out.textContent = JSON.stringify(data, null, 2);
+                if (data.access_token) {
+                    document.getElementById('globalAuthToken').value = data.access_token;
+                    localStorage.setItem('access_token', data.access_token);
+                    out.textContent += "\n\n[SUCCESS]: JWT Token auto-injected into global header!";
+                    showToast('Login successful & JWT auto-injected!', 'success');
+                } else {
+                    showToast('Login failed: Invalid credentials', 'error');
+                }
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                showToast(`Login error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testLogout() {
+            const out = document.getElementById('logoutOutput');
+            out.textContent = "Executing POST /api/v1/auth/logout...\n";
+            try {
+                const res = await fetch('/api/v1/auth/logout', {
+                    method: 'POST',
+                    headers: getAuthHeaders()
+                });
+                const data = await res.json();
+                out.textContent = JSON.stringify(data, null, 2);
+                clearAuthToken();
+                showToast('Successfully logged out and token revoked.', 'success');
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                showToast(`Logout error: ${err.message}`, 'error');
+            }
+        }
+
+        async function testListTasks() {
+            const q = document.getElementById('taskSearchQuery').value.trim();
+            const statusFilter = document.getElementById('taskStatusFilter').value;
+            const priorityFilter = document.getElementById('taskPriorityFilter').value;
+
+            let url = '/api/v1/tasks/?';
+            const params = new URLSearchParams();
+            if (q) params.append('q', q);
+            if (statusFilter) params.append('status_filter', statusFilter);
+            if (priorityFilter) params.append('priority', priorityFilter);
+            url += params.toString();
+
+            const out = document.getElementById('tasksListOutput');
+            const cardsContainer = document.getElementById('tasksListCards');
+            const countBadge = document.getElementById('taskCountBadge');
+            
+            cardsContainer.innerHTML = '<div class="text-xs text-textMuted font-mono italic p-4 text-center">Loading tasks...</div>';
+            try {
+                const res = await fetch(url, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
+                const data = await res.json();
+                out.textContent = JSON.stringify(data, null, 2);
+
+                if (Array.isArray(data)) {
+                    countBadge.textContent = `${data.length} tasks found`;
+                    if (data.length === 0) {
+                        cardsContainer.innerHTML = '<div class="text-xs text-textMuted font-mono italic p-4 text-center">No tasks match the filter criteria.</div>';
+                    } else {
+                        cardsContainer.innerHTML = '';
+                        data.forEach(task => {
+                            const statusColor = task.status === 'completed' ? 'text-emeraldNeon bg-emeraldNeon/10 border-emeraldNeon/30' : (task.status === 'in_progress' ? 'text-blue-400 bg-blue-500/10 border-blue-500/30' : 'text-amberWarning bg-amberWarning/10 border-amberWarning/40');
+                            const priorityColor = task.priority === 'high' ? 'text-red-400 bg-red-500/10 border-red-500/30' : (task.priority === 'medium' ? 'text-amberWarning bg-amberWarning/10 border-amberWarning/30' : 'text-textMuted bg-charcoalBase border-charcoalBorder');
+                            
+                            const card = document.createElement('div');
+                            card.className = 'bg-charcoalBase border border-charcoalBorder rounded-lg p-3.5 flex items-center justify-between space-x-4 shadow';
+                            card.innerHTML = `
+                                <div class="space-y-1 overflow-hidden">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-xs font-bold text-white font-mono">#${task.id} - ${escapeHtml(task.title)}</span>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${statusColor}">${task.status}</span>
+                                        <span class="px-2 py-0.5 rounded text-[10px] font-mono border ${priorityColor}">${task.priority}</span>
+                                    </div>
+                                    <p class="text-xs text-textMuted truncate">${escapeHtml(task.description || 'No description')}</p>
+                                </div>
+                                <div class="flex items-center space-x-2 shrink-0">
+                                    <button onclick="populateUpdateForm(${task.id}, '${escapeHtml(task.title)}', '${escapeHtml(task.description || '')}', '${task.status}', '${task.priority}')" class="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 px-2.5 py-1 rounded text-xs font-semibold">Edit</button>
+                                    <button onclick="openDeleteModal(${task.id})" class="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/40 px-2.5 py-1 rounded text-xs font-semibold">Delete</button>
+                                </div>
+                            `;
+                            cardsContainer.appendChild(card);
+                        });
+                    }
+                }
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                cardsContainer.innerHTML = `<div class="text-xs text-red-400 font-mono p-4">Error loading tasks: ${err.message}</div>`;
+            }
+        }
+
+        async function testCreateTask() {
+            const payload = document.getElementById('taskCreatePayload').value;
+            const out = document.getElementById('taskCreateOutput');
+            out.textContent = "Executing POST /api/v1/tasks/...\n";
+            try {
+                const res = await fetch('/api/v1/tasks/', {
+                    method: 'POST',
+                    headers: getAuthHeaders(),
+                    body: payload
+                });
+                const data = await res.json();
+                out.textContent = JSON.stringify(data, null, 2);
+                if (res.ok) {
+                    showToast('Task created successfully!', 'success');
+                    testListTasks();
+                } else {
+                    showToast(`Failed to create task: ${data.detail || 'Check payload'}`, 'error');
+                }
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                showToast(`Error: ${err.message}`, 'error');
+            }
+        }
+
+        function populateUpdateForm(id, title, description, status, priority) {
+            document.getElementById('updateTaskId').value = id;
+            document.getElementById('taskUpdatePayload').value = JSON.stringify({
+                title: title,
+                description: description,
+                status: status,
+                priority: priority
+            }, null, 2);
+            window.location.hash = '#section-tasks';
+            showToast(`Task #${id} loaded into Update form.`, 'success');
+        }
+
+        async function testUpdateTask() {
+            const taskId = document.getElementById('updateTaskId').value.trim();
+            const payload = document.getElementById('taskUpdatePayload').value;
+            const out = document.getElementById('taskUpdateOutput');
+            
+            if (!taskId) {
+                showToast('Please provide a valid Task ID to update.', 'error');
+                return;
+            }
+
+            out.textContent = `Executing PATCH /api/v1/tasks/${taskId}...\n`;
+            try {
+                const res = await fetch(`/api/v1/tasks/${taskId}`, {
+                    method: 'PATCH',
+                    headers: getAuthHeaders(),
+                    body: payload
+                });
+                const data = await res.json();
+                out.textContent = JSON.stringify(data, null, 2);
+                if (res.ok) {
+                    showToast(`Task #${taskId} updated successfully!`, 'success');
+                    testListTasks();
+                } else {
+                    showToast(`Failed to update task: ${data.detail || 'Check payload'}`, 'error');
+                }
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                showToast(`Error: ${err.message}`, 'error');
+            }
+        }
+
+        let pendingDeleteId = null;
+        function openDeleteModal(taskId) {
+            pendingDeleteId = taskId;
+            document.getElementById('deleteModalMessage').textContent = `Are you sure you want to delete task #${taskId}? This action cannot be undone.`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            pendingDeleteId = null;
+            document.getElementById('deleteModal').classList.add('hidden');
+        }
+
+        document.getElementById('confirmDeleteBtn').onclick = async () => {
+            if (!pendingDeleteId) return;
+            const taskId = pendingDeleteId;
+            closeDeleteModal();
+            try {
+                const res = await fetch(`/api/v1/tasks/${taskId}`, {
+                    method: 'DELETE',
+                    headers: getAuthHeaders()
+                });
+                showToast(`Task #${taskId} deleted successfully!`, 'success');
+                testListTasks();
+            } catch (err) {
+                showToast(`Error deleting task: ${err.message}`, 'error');
+            }
+        };
+
+        async function testFetchWeather() {
+            const lat = document.getElementById('weatherLat').value || 52.52;
+            const lon = document.getElementById('weatherLon').value || 13.41;
+            const out = document.getElementById('weatherOutput');
+            out.textContent = `Executing GET /api/v1/external/weather?latitude=${lat}&longitude=${lon}...\n`;
+            try {
+                const res = await fetch(`/api/v1/external/weather?latitude=${lat}&longitude=${lon}`, {
+                    method: 'GET',
+                    headers: getAuthHeaders()
+                });
+                const data = await res.json();
+                out.textContent = JSON.stringify(data, null, 2);
+                if (res.ok) {
+                    showToast('Weather data fetched successfully!', 'success');
+                } else {
+                    showToast('Failed to fetch weather data', 'error');
+                }
+            } catch (err) {
+                out.textContent = `Error: ${err.message}`;
+                showToast(`Weather fetch error: ${err.message}`, 'error');
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function openDocsModal() { document.getElementById('docsModal').classList.remove('hidden'); }
+        function closeDocsModal() { document.getElementById('docsModal').classList.add('hidden'); }
+
+        function toggleAiChat() {
+            const win = document.getElementById('aiChatWindow');
+            win.classList.toggle('hidden');
+            if (!win.classList.contains('hidden')) {
+                document.getElementById('aiChatInput').focus();
+            }
+        }
+
+        async function sendAiMessage() {
+            const input = document.getElementById('aiChatInput');
+            const prompt = input.value.trim();
+            if (!prompt) return;
+
+            const messagesContainer = document.getElementById('aiChatMessages');
+            
+            const userMsg = document.createElement('div');
+            userMsg.className = 'bg-emeraldNeon/10 border border-emeraldNeon/30 p-2.5 rounded-xl text-textPrimary ml-6 space-y-1';
+            userMsg.innerHTML = `<div class="text-[10px] text-emeraldNeon font-bold text-right">You</div><div class="text-right">${escapeHtml(prompt)}</div>`;
+            messagesContainer.appendChild(userMsg);
+            
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            const loadingMsg = document.createElement('div');
+            loadingMsg.className = 'bg-charcoalCard border border-charcoalBorder p-2.5 rounded-xl text-textMuted italic';
+            loadingMsg.textContent = 'AI Assistant is thinking & executing action...';
+            messagesContainer.appendChild(loadingMsg);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            try {
+                const res = await fetch('/api/v1/chat/assistant', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+                const data = await res.json();
+                loadingMsg.remove();
+
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'bg-charcoalCard border border-charcoalBorder p-2.5 rounded-xl text-textPrimary space-y-1 mr-6';
+                aiMsg.innerHTML = `
+                    <div class="text-[10px] text-emeraldNeon font-bold flex justify-between">
+                        <span>AI Assistant</span>
+                        <span class="text-amberWarning font-mono">[${data.action_executed || 'reply'}]</span>
+                    </div>
+                    <div>${escapeHtml(data.reply)}</div>
+                `;
+                messagesContainer.appendChild(aiMsg);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+                showToast(`AI Action executed: ${data.action_executed}`, 'success');
+
+                if (data.action_executed === 'create_task') {
+                    testListTasks();
+                }
+            } catch (err) {
+                loadingMsg.remove();
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'bg-red-500/20 border border-red-500/40 p-2.5 rounded-xl text-red-400';
+                errorMsg.textContent = `Error communicating with AI Assistant: ${err.message}`;
+                messagesContainer.appendChild(errorMsg);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('access_token');
+            if (saved) {
+                document.getElementById('globalAuthToken').value = saved;
+            }
+            testListTasks();
+        };
+    </script>
+</body>
+</html>
