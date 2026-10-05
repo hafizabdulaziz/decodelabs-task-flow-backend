@@ -10,16 +10,31 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from contextlib import asynccontextmanager
 from app.config import settings
+from app.services.http_client import http_manager
 from app.api.v1.auth import router as auth_router
 from app.api.v1.users import router as users_router
 from app.api.v1.tasks import router as tasks_router
 from app.api.v1.system import router as system_router
+from app.api.v1.external import router as external_router
+from app.api.v1.chat import router as chat_router
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, JSONResponse
 
 logger = logging.getLogger("uvicorn.error")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    FastAPI lifespan manager for initializing and closing async HTTP client.
+    """
+    await http_manager.init_client()
+    yield
+    await http_manager.close_client()
+
 
 app = FastAPI(
     title="Decodelabs Task Flow API",
@@ -28,6 +43,7 @@ app = FastAPI(
     docs_url=None,
     redoc_url="/redoc",
     openapi_url="/openapi.json",
+    lifespan=lifespan,
 )
 
 # Mount static files
@@ -106,6 +122,8 @@ app.include_router(auth_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1")
 app.include_router(tasks_router, prefix="/api/v1")
 app.include_router(system_router, prefix="/api/v1")
+app.include_router(external_router, prefix="/api/v1")
+app.include_router(chat_router, prefix="/api/v1")
 
 
 @app.get("/")
