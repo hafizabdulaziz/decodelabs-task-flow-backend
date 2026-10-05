@@ -121,6 +121,28 @@ Sentinel Auth Vault implements a strict, centralized global exception handling m
 
 ---
 
+## 📚 API Specification & Documentation
+Sentinel Auth Vault provides rich, production-grade OpenAPI spec coverage across all routes (`/docs` and `/redoc`), adhering strictly to RESTful conventions and standardized Pydantic error payloads.
+
+### API Routes & Status Codes Summary
+| Endpoint | Method | Status Codes | Description |
+| :--- | :--- | :--- | :--- |
+| `/api/v1/auth/register` | `POST` | `201`, `400`, `422`, `500` | Register a new user account |
+| `/api/v1/auth/login` | `POST` | `200`, `401`, `422`, `500` | Authenticate user & issue JWT Bearer token |
+| `/api/v1/auth/logout` | `POST` | `200`, `401`, `500` | Revoke active session / logout |
+| `/api/v1/users/me` | `GET` | `200`, `401`, `404`, `500` | Fetch current authenticated user profile |
+| `/api/v1/users/me` | `PATCH` | `200`, `401`, `422`, `500` | Update current user profile properties |
+| `/api/v1/tasks/` | `POST` | `201`, `401`, `422`, `500` | Create a new task |
+| `/api/v1/tasks/` | `GET` | `200`, `401`, `422`, `500` | List tasks with filtering, search & sorting |
+| `/api/v1/tasks/{id}` | `GET` | `200`, `401`, `404`, `500` | Fetch single task by ID |
+| `/api/v1/tasks/{id}` | `PATCH` | `200`, `401`, `404`, `422`, `500` | Update task by ID |
+| `/api/v1/tasks/{id}` | `DELETE` | `204`, `401`, `404`, `500` | Delete task by ID |
+| `/api/v1/external/weather` | `GET` | `200`, `422`, `500` | Third-party weather integration facade |
+| `/api/v1/chat/assistant` | `POST` | `200`, `422`, `500` | AI Chat Assistant natural language executor |
+| `/api/v1/system/status` | `GET` | `200`, `500` | System metrics & health telemetry |
+
+---
+
 ## 🧪 Testing & Code Quality Checks
 - **Run Tests (Zero Warnings):**
   ```bash

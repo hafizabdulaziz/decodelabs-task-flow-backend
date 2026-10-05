@@ -1,5 +1,5 @@
 """
-Authentication API router for user registration and login.
+Authentication API router for user registration, login, and session logout.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -10,14 +10,31 @@ from sqlalchemy import select
 from app.db.session import get_db
 from app.models.user import UserModel
 from app.schemas.user import UserCreate, UserResponse
+from app.schemas.error import ErrorResponse
 from app.core.security import hash_password, verify_password
 from app.core.jwt import create_access_token
 from app.core.deps import get_current_active_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+STANDARD_RESPONSES = {
+    400: {"model": ErrorResponse, "description": "Bad Request / Validation Error"},
+    401: {"model": ErrorResponse, "description": "Unauthorized / Invalid Credentials or Token"},
+    403: {"model": ErrorResponse, "description": "Forbidden / Inactive User"},
+    404: {"model": ErrorResponse, "description": "Not Found"},
+    422: {"model": ErrorResponse, "description": "Unprocessable Entity / Validation Error"},
+    429: {"model": ErrorResponse, "description": "Rate Limit Exceeded"},
+    500: {"model": ErrorResponse, "description": "Internal Server Error"},
+}
 
-@router.post("/logout", status_code=status.HTTP_200_OK)
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_200_OK,
+    responses={200: {"description": "Successfully logged out and revoked session token"}, **STANDARD_RESPONSES},
+    summary="User Logout",
+    description="Logout currently authenticated user and revoke/blacklist the active JWT token.",
+)
 async def logout_user(current_user: UserModel = Depends(get_current_active_user)):
     """
     Logout currently authenticated user and revoke/blacklist the active JWT token.
@@ -28,7 +45,18 @@ async def logout_user(current_user: UserModel = Depends(get_current_active_user)
     }
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register",
+    response_model=UserResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        201: {"model": UserResponse, "description": "User successfully registered"},
+        400: {"model": ErrorResponse, "description": "Email already registered"},
+        **STANDARD_RESPONSES,
+    },
+    summary="Register User",
+    description="Register a new user account with email uniqueness validation and password hashing.",
+)
 async def register_user(
     user_in: UserCreate,
     db: AsyncSession = Depends(get_db),
@@ -66,7 +94,10 @@ async def register_user(
         200: {"description": "Successful Authentication - Returns JWT Bearer Token"},
         401: {"description": "Unauthorized - Incorrect email or password"},
         422: {"description": "Unprocessable Entity - Invalid grant_type or validation error"},
+        **STANDARD_RESPONSES,
     },
+    summary="User Login (JWT)",
+    description="OAuth2 compatible login endpoint, returning a JWT access token upon successful authentication.",
 )
 async def login_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),

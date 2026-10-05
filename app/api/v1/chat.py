@@ -11,12 +11,23 @@ from app.services.external_service import ExternalService
 from app.models.task import TaskModel
 from app.models.user import UserModel
 from app.core.security import hash_password
+from app.schemas.error import ErrorResponse
 
 router = APIRouter(prefix="/chat", tags=["AI Chat Assistant"])
 
+STANDARD_RESPONSES = {
+    400: {"model": ErrorResponse, "description": "Bad Request"},
+    401: {"model": ErrorResponse, "description": "Unauthorized"},
+    403: {"model": ErrorResponse, "description": "Forbidden"},
+    404: {"model": ErrorResponse, "description": "Not Found"},
+    422: {"model": ErrorResponse, "description": "Validation Error"},
+    429: {"model": ErrorResponse, "description": "Rate Limit Exceeded"},
+    500: {"model": ErrorResponse, "description": "Internal Server Error"},
+}
+
 
 class ChatRequest(BaseModel):
-    prompt: str = Field(..., description="Natural language prompt from user")
+    prompt: str = Field(..., description="Natural language prompt from user", example="Create task Buy groceries")
 
 
 class ChatResponse(BaseModel):
@@ -25,7 +36,14 @@ class ChatResponse(BaseModel):
     data: dict = Field(default_factory=dict, description="Related action payload data")
 
 
-@router.post("/assistant", response_model=ChatResponse, status_code=status.HTTP_200_OK)
+@router.post(
+    "/assistant",
+    response_model=ChatResponse,
+    status_code=status.HTTP_200_OK,
+    responses={200: {"model": ChatResponse, "description": "AI prompt successfully processed"}, **STANDARD_RESPONSES},
+    summary="AI Chat Assistant Prompt Execution",
+    description="AI Chat Assistant that interprets natural language commands (create task, register user, check weather, system status) and performs automated backend operations.",
+)
 async def chat_assistant(req: ChatRequest, db: AsyncSession = Depends(get_db)):
     """
     AI Chat Assistant that interprets natural language commands (create task, register user, check weather, system status)
