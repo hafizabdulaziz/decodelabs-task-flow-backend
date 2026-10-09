@@ -11,12 +11,33 @@ from app.db.session import get_db
 from app.models.user import UserModel
 from app.models.task import TaskModel, TaskStatus, TaskPriority
 from app.schemas.task import TaskCreate, TaskResponse, TaskUpdate, TaskSortField
+from app.schemas.error import ErrorResponse
 from app.core.deps import get_current_active_user
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
 
+STANDARD_RESPONSES = {
+    400: {"model": ErrorResponse, "description": "Bad Request"},
+    401: {"model": ErrorResponse, "description": "Unauthorized"},
+    403: {"model": ErrorResponse, "description": "Forbidden"},
+    404: {"model": ErrorResponse, "description": "Not Found"},
+    422: {"model": ErrorResponse, "description": "Validation Error"},
+    429: {"model": ErrorResponse, "description": "Rate Limit Exceeded"},
+    500: {"model": ErrorResponse, "description": "Internal Server Error"},
+}
 
-@router.post("/", response_model=TaskResponse, status_code=status.HTTP_201_CREATED)
+
+@router.post(
+    "/",
+    response_model=TaskResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={
+        201: {"model": TaskResponse, "description": "Task successfully created"},
+        **STANDARD_RESPONSES,
+    },
+    summary="Create Task",
+    description="Create a new task owned by the currently authenticated user.",
+)
 async def create_task(
     task_in: TaskCreate,
     current_user: UserModel = Depends(get_current_active_user),
@@ -39,7 +60,17 @@ async def create_task(
     return new_task
 
 
-@router.get("/", response_model=List[TaskResponse])
+@router.get(
+    "/",
+    response_model=List[TaskResponse],
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {"model": List[TaskResponse], "description": "List of tasks retrieved successfully"},
+        **STANDARD_RESPONSES,
+    },
+    summary="List Tasks",
+    description="List all tasks belonging to the currently authenticated user with pagination, filtering, search, and sorting.",
+)
 async def list_tasks(
     skip: int = 0,
     limit: int = 100,
@@ -83,7 +114,17 @@ async def list_tasks(
     return list(tasks)
 
 
-@router.get("/{task_id}", response_model=TaskResponse)
+@router.get(
+    "/{task_id}",
+    response_model=TaskResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {"model": TaskResponse, "description": "Task retrieved successfully"},
+        **STANDARD_RESPONSES,
+    },
+    summary="Get Task by ID",
+    description="Get a single task by ID ensuring user ownership.",
+)
 async def get_task(
     task_id: int,
     current_user: UserModel = Depends(get_current_active_user),
@@ -104,7 +145,17 @@ async def get_task(
     return task
 
 
-@router.patch("/{task_id}", response_model=TaskResponse)
+@router.patch(
+    "/{task_id}",
+    response_model=TaskResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        200: {"model": TaskResponse, "description": "Task updated successfully"},
+        **STANDARD_RESPONSES,
+    },
+    summary="Update Task",
+    description="Update an existing task by ID ensuring user ownership.",
+)
 async def update_task(
     task_id: int,
     task_update: TaskUpdate,
@@ -139,7 +190,7 @@ async def update_task(
     status_code=status.HTTP_204_NO_CONTENT,
     responses={
         204: {"description": "Task successfully deleted (Empty Body)"},
-        404: {"description": "Task not found"},
+        **STANDARD_RESPONSES,
     },
     summary="Delete Task",
     description="Delete a task by ID ensuring user ownership. Returns 204 No Content on success.",
