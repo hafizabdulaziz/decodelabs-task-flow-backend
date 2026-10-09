@@ -39,7 +39,7 @@ async def test_register_duplicate_email():
 
         response2 = await ac.post("/api/v1/auth/register", json=payload)
         assert response2.status_code == 400
-        assert "Email already registered" in response2.json()["detail"]
+        assert "Email already registered" in response2.json()["message"]
 
 
 @pytest.mark.anyio

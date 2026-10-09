@@ -106,7 +106,6 @@ Sentinel Auth Vault implements a strict, centralized global exception handling m
 | :--- | :--- | :--- |
 | `error_code` | `str` | Machine-readable error code (e.g., `UNAUTHORIZED`, `VALIDATION_ERROR`, `BAD_REQUEST`, `FORBIDDEN_ACCESS`, `NOT_FOUND`, `INTERNAL_SERVER_ERROR`) |
 | `message` | `str` | Human-readable explanation of the error |
-| `detail` | `str` | Backward-compatible detail string mirroring the message |
 | `timestamp` | `str` | ISO-8601 UTC timestamp of error occurrence |
 
 ### Example Error Response (`401 Unauthorized`)
@@ -114,8 +113,7 @@ Sentinel Auth Vault implements a strict, centralized global exception handling m
 {
   "error_code": "UNAUTHORIZED",
   "message": "Could not validate credentials",
-  "detail": "Could not validate credentials",
-  "timestamp": "2026-10-05T14:30:00.000000+00:00"
+  "timestamp": "2026-10-10T14:30:00.000000+00:00"
 }
 ```
 

@@ -1,5 +1,5 @@
 """
-User SQLAlchemy database model.
+User SQLAlchemy database model with Role-Based Access Control (RBAC).
 """
 
 from typing import List, TYPE_CHECKING
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class UserModel(Base, TimestampMixin):
     """
-    User database model representing application users.
+    User database model representing application users with support for roles and privileges.
     """
     __tablename__ = "users"
 
@@ -21,6 +21,7 @@ class UserModel(Base, TimestampMixin):
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    role: Mapped[str] = mapped_column(String(50), default="USER", nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
@@ -32,4 +33,4 @@ class UserModel(Base, TimestampMixin):
     )
 
     def __repr__(self) -> str:
-        return f"<User(id={self.id}, email='{self.email}', is_active={self.is_active})>"
+        return f"<User(id={self.id}, email='{self.email}', role='{self.role}', is_active={self.is_active})>"
