@@ -135,8 +135,7 @@ Every response includes rate limit telemetry headers:
 {
   "error_code": "RATE_LIMIT_EXCEEDED",
   "message": "Rate limit exceeded. Maximum 5 requests per minute allowed. Retry after 58 seconds.",
-  "detail": "Rate limit exceeded. Maximum 5 requests per minute allowed. Retry after 58 seconds.",
-  "timestamp": "2026-10-05T14:32:10.000000+00:00"
+  "timestamp": "2026-10-10T14:32:10.000000+00:00"
 }
 ```
 
