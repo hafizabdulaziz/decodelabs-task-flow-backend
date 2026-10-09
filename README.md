@@ -163,6 +163,18 @@ Sentinel Auth Vault provides rich, production-grade OpenAPI spec coverage across
 
 ---
 
+## 🛡️ RBAC Architecture & Role Hierarchy Matrix
+Sentinel Auth Vault implements strict granular Role-Based Access Control (RBAC) via FastAPI dependency factories (`has_role([...])`). Unauthorized requests return HTTP 401 (`UNAUTHORIZED`), while unauthorized role access returns HTTP 403 (`FORBIDDEN_ACCESS`) formatted in the standardized error payload.
+
+### Role Hierarchy & Permissions Matrix
+| Role | Superuser | Allowed Endpoints / Actions | Error on Breach |
+| :--- | :--- | :--- | :--- |
+| `ADMIN` | Yes | Full system access, User management, Task administration | `403 FORBIDDEN_ACCESS` |
+| `MANAGER` | No | Team management, Task CRUD, Reports | `403 FORBIDDEN_ACCESS` |
+| `USER` | No | Personal profile management, Personal task CRUD | `403 FORBIDDEN_ACCESS` |
+
+---
+
 ## 🧪 Testing & Code Quality Checks
 - **Run Tests (Zero Warnings):**
   ```bash

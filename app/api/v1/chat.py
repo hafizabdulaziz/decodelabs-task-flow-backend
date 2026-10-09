@@ -27,7 +27,7 @@ STANDARD_RESPONSES = {
 
 
 class ChatRequest(BaseModel):
-    prompt: str = Field(..., description="Natural language prompt from user", example="Create task Buy groceries")
+    prompt: str = Field(..., description="Natural language prompt from user", json_schema_extra={"example": "Create task Buy groceries"})
 
 
 class ChatResponse(BaseModel):
