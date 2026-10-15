@@ -45,7 +45,9 @@ class ExternalService:
             return "Unknown condition", False
 
     @classmethod
-    async def fetch_weather(cls, latitude: float = 52.52, longitude: float = 13.41) -> ClientThirdPartyDataResponse:
+    async def fetch_weather(
+        cls, latitude: float = 52.52, longitude: float = 13.41
+    ) -> ClientThirdPartyDataResponse:
         """
         Fetch weather data from external API with timeout and error shielding,
         translating raw 100+ parameters into clean 3-5 client keys (The Shield & Translator).
@@ -54,7 +56,7 @@ class ExternalService:
         params = {
             "latitude": latitude,
             "longitude": longitude,
-            "current_weather": "true"
+            "current_weather": "true",
         }
 
         try:
@@ -76,18 +78,26 @@ class ExternalService:
                 temperature_celsius=float(temp),
                 condition=condition,
                 is_rainy=is_rainy,
-                timestamp=str(time_str)
+                timestamp=str(time_str),
             )
 
-        except (httpx.TimeoutException, httpx.RequestError, httpx.HTTPStatusError) as exc:
-            logger.warning(f"External API error or timeout encountered: {exc}. Providing fallback degraded response.")
+        except (
+            httpx.TimeoutException,
+            httpx.RequestError,
+            httpx.HTTPStatusError,
+        ) as exc:
+            logger.warning(
+                f"External API error or timeout encountered: {exc}. Providing fallback degraded response."
+            )
             return cls._get_fallback_weather(latitude, longitude)
         except Exception as exc:
             logger.error(f"Unexpected error in ExternalService: {exc}", exc_info=True)
             return cls._get_fallback_weather(latitude, longitude)
 
     @staticmethod
-    def _get_fallback_weather(latitude: float, longitude: float) -> ClientThirdPartyDataResponse:
+    def _get_fallback_weather(
+        latitude: float, longitude: float
+    ) -> ClientThirdPartyDataResponse:
         """
         Fallback degraded response when external provider fails or times out.
         """
@@ -96,5 +106,5 @@ class ExternalService:
             temperature_celsius=22.5,
             condition="Service Degraded / Cached Fallback",
             is_rainy=False,
-            timestamp=datetime.now(timezone.utc).isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat(),
         )

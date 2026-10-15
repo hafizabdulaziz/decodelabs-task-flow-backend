@@ -19,7 +19,9 @@ async def admin_only_endpoint(current_user: UserModel = Depends(has_role(["ADMIN
 
 
 @rbac_test_router.get("/manager-or-admin", status_code=status.HTTP_200_OK)
-async def manager_endpoint(current_user: UserModel = Depends(has_role(["ADMIN", "MANAGER"]))):
+async def manager_endpoint(
+    current_user: UserModel = Depends(has_role(["ADMIN", "MANAGER"])),
+):
     return {"message": "Welcome Manager or Admin", "user": current_user.email}
 
 
@@ -31,7 +33,9 @@ async def test_rbac_permissions():
     """
     Test that users without appropriate roles receive 403 Forbidden with standardized error payload.
     """
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         await ac.post(
             "/api/v1/auth/register",
             json={

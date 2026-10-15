@@ -18,7 +18,9 @@ async def test_rate_limiting_auth_routes():
         "password": "SecurePassword123!",
         "full_name": "Rate Limit Test",
     }
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         for _ in range(5):
             response = await ac.post("/api/v1/auth/register", json=payload)
             assert "X-RateLimit-Limit" in response.headers

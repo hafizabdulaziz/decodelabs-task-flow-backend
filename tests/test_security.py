@@ -24,7 +24,9 @@ def test_jwt_token_generation_and_verification():
     Test that JWT access tokens are correctly created and verified.
     """
     subject = "testuser@decodelabs.com"
-    token = create_access_token(data={"sub": subject}, expires_delta=timedelta(minutes=15))
+    token = create_access_token(
+        data={"sub": subject}, expires_delta=timedelta(minutes=15)
+    )
 
     assert token is not None
     assert isinstance(token, str)
@@ -38,6 +40,8 @@ def test_invalid_jwt_token():
     """
     Test that verifying an invalid or tampered JWT token returns None.
     """
-    invalid_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalidpayload.invalidsignature"
+    invalid_token = (
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalidpayload.invalidsignature"
+    )
     payload = verify_access_token(invalid_token)
     assert payload is None

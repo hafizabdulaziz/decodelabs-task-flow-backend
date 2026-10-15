@@ -9,7 +9,9 @@ from app.main import app
 
 @pytest.mark.anyio
 async def test_global_exception_handler_schema():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.get("/api/v1/non-existent-route")
         assert response.status_code == 404
         data = response.json()
@@ -21,7 +23,9 @@ async def test_global_exception_handler_schema():
 
 @pytest.mark.anyio
 async def test_validation_error_schema():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.post("/api/v1/auth/register", json={"password": "123"})
         assert response.status_code == 422
         data = response.json()

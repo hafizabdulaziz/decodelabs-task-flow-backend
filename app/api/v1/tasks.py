@@ -65,7 +65,10 @@ async def create_task(
     response_model=List[TaskResponse],
     status_code=status.HTTP_200_OK,
     responses={
-        200: {"model": List[TaskResponse], "description": "List of tasks retrieved successfully"},
+        200: {
+            "model": List[TaskResponse],
+            "description": "List of tasks retrieved successfully",
+        },
         **STANDARD_RESPONSES,
     },
     summary="List Tasks",
@@ -134,7 +137,9 @@ async def get_task(
     Get a single task by ID (ensuring ownership).
     """
     result = await db.execute(
-        select(TaskModel).where(TaskModel.id == task_id, TaskModel.owner_id == current_user.id)
+        select(TaskModel).where(
+            TaskModel.id == task_id, TaskModel.owner_id == current_user.id
+        )
     )
     task = result.scalars().first()
     if not task:
@@ -166,7 +171,9 @@ async def update_task(
     Update an existing task by ID (ensuring ownership).
     """
     result = await db.execute(
-        select(TaskModel).where(TaskModel.id == task_id, TaskModel.owner_id == current_user.id)
+        select(TaskModel).where(
+            TaskModel.id == task_id, TaskModel.owner_id == current_user.id
+        )
     )
     task = result.scalars().first()
     if not task:
@@ -204,7 +211,9 @@ async def delete_task(
     Delete a task by ID (ensuring ownership). Returns 204 No Content on success.
     """
     result = await db.execute(
-        select(TaskModel).where(TaskModel.id == task_id, TaskModel.owner_id == current_user.id)
+        select(TaskModel).where(
+            TaskModel.id == task_id, TaskModel.owner_id == current_user.id
+        )
     )
     task = result.scalars().first()
     if not task:

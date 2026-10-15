@@ -14,7 +14,7 @@ logger = logging.getLogger("uvicorn.error")
 _RATE_LIMIT_STORE = {}
 WINDOW_SIZE = 60  # 1 minute
 
-AUTH_LIMIT = 5       # 5 requests per minute for auth routes
+AUTH_LIMIT = 5  # 5 requests per minute for auth routes
 STANDARD_LIMIT = 60  # 60 requests per minute for standard routes
 
 
@@ -26,7 +26,13 @@ async def rate_limit_middleware(request: Request, call_next):
     Returns 429 Too Many Requests with standardized error payload on breach.
     """
     path = request.url.path
-    if path.startswith("/static") or path in ["/docs", "/redoc", "/openapi.json", "/health", "/"]:
+    if path.startswith("/static") or path in [
+        "/docs",
+        "/redoc",
+        "/openapi.json",
+        "/health",
+        "/",
+    ]:
         return await call_next(request)
 
     client_ip = request.client.host if request.client else "unknown"

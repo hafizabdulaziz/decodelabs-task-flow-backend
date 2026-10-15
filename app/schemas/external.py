@@ -10,6 +10,7 @@ class RawExternalData(BaseModel):
     """
     Validation schema for raw incoming data from third-party API.
     """
+
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     timezone: Optional[str] = None
@@ -23,8 +24,13 @@ class ClientThirdPartyDataResponse(BaseModel):
     """
     Sanitized client-facing payload containing 3-5 clean keys (The Translator).
     """
+
     location: str = Field(..., description="Location identifier or coordinates")
-    temperature_celsius: float = Field(..., description="Current temperature in Celsius")
+    temperature_celsius: float = Field(
+        ..., description="Current temperature in Celsius"
+    )
     condition: str = Field(..., description="Weather condition description")
-    is_rainy: bool = Field(..., description="Indicator if precipitation/rain is detected")
+    is_rainy: bool = Field(
+        ..., description="Indicator if precipitation/rain is detected"
+    )
     timestamp: str = Field(..., description="Observation timestamp")

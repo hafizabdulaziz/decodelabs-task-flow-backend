@@ -30,7 +30,10 @@ START_TIME = time.time()
 @router.get(
     "/status",
     status_code=status.HTTP_200_OK,
-    responses={200: {"description": "System status retrieved successfully"}, **STANDARD_RESPONSES},
+    responses={
+        200: {"description": "System status retrieved successfully"},
+        **STANDARD_RESPONSES,
+    },
     summary="Get System Status & Telemetry",
     description="Get comprehensive system metrics including database connectivity, memory usage, uptime, and server health.",
 )
@@ -45,7 +48,7 @@ async def get_system_status(db: AsyncSession = Depends(get_db)):
         db_status = f"unhealthy: {str(e)}"
 
     uptime_seconds = int(time.time() - START_TIME)
-    
+
     process = psutil.Process()
     memory_info = process.memory_info()
     cpu_percent = process.cpu_percent(interval=0.1)
@@ -64,5 +67,5 @@ async def get_system_status(db: AsyncSession = Depends(get_db)):
             "uptime_seconds": uptime_seconds,
             "cpu_usage_percent": cpu_percent,
             "memory_usage_mb": round(memory_info.rss / (1024 * 1024), 2),
-        }
+        },
     }

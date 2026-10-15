@@ -568,9 +568,17 @@
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) return;
             const toast = document.createElement('div');
-            const bgClass = type === 'success' ? 'bg-emeraldNeon/20 border-emeraldNeon/50 text-emeraldNeon' : 'bg-red-500/20 border-red-500/50 text-red-400';
-            const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+            let bgClass = 'bg-emeraldNeon/20 border-emeraldNeon/50 text-emeraldNeon';
+            let icon = 'fa-circle-check';
+            if (type === 'warning' || type === 'validation') {
+                bgClass = 'bg-amberWarning/20 border-amberWarning/50 text-amberWarning';
+                icon = 'fa-triangle-exclamation';
+            } else if (type === 'error') {
+                bgClass = 'bg-red-500/20 border-red-500/50 text-red-400';
+                icon = 'fa-circle-xmark';
+            }
             
             toast.className = `pointer-events-auto flex items-center space-x-2 px-4 py-3 rounded-xl border ${bgClass} shadow-xl backdrop-blur text-xs font-mono transition transform translate-y-2 opacity-0 duration-300`;
             toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;
@@ -586,64 +594,110 @@
             }, 3500);
         }
 
-        function injectAuthToken() {
-            const token = document.getElementById('globalAuthToken').value.trim();
-            if (token) {
-                localStorage.setItem('access_token', token);
-                showToast('JWT Bearer token successfully injected and stored!', 'success');
-            } else {
-                showToast('Please enter a valid token.', 'error');
+        function injectAuthToken(event = null) {
+            if (event && typeof event.preventDefault === 'function') {
+                event.preventDefault();
+            }
+            try {
+                const tokenInput = document.getElementById('globalAuthToken');
+                if (!tokenInput) {
+                    showToast('Auth token input element not found.', 'error');
+                    return;
+                }
+                const token = tokenInput.value.trim();
+                if (token) {
+                    localStorage.setItem('access_token', token);
+                    showToast('JWT Bearer token successfully injected and stored!', 'success');
+                } else {
+                    showToast('Please enter a valid token.', 'error');
+                }
+            } catch (err) {
+                showToast(`Token injection error: ${err.message}`, 'error');
             }
         }
 
         function clearAuthToken() {
-            document.getElementById('globalAuthToken').value = '';
-            localStorage.removeItem('access_token');
-            showToast('Auth token cleared from session.', 'success');
+            try {
+                const tokenInput = document.getElementById('globalAuthToken');
+                if (tokenInput) tokenInput.value = '';
+                localStorage.removeItem('access_token');
+                showToast('Auth token cleared from session.', 'success');
+            } catch (err) {
+                showToast(`Error clearing token: ${err.message}`, 'error');
+            }
         }
 
         function refreshSessionState() {
-            const saved = localStorage.getItem('access_token');
-            if (saved) {
-                document.getElementById('globalAuthToken').value = saved;
-                showToast('Session restored from localStorage.', 'success');
-            } else {
-                showToast('No active session found.', 'error');
+            try {
+                const saved = localStorage.getItem('access_token');
+                const tokenInput = document.getElementById('globalAuthToken');
+                if (saved && tokenInput) {
+                    tokenInput.value = saved;
+                    showToast('Session restored from localStorage.', 'success');
+                } else {
+                    showToast('No active session found.', 'error');
+                }
+            } catch (err) {
+                showToast(`Error restoring session: ${err.message}`, 'error');
             }
         }
 
         function getAuthHeaders() {
-            const token = document.getElementById('globalAuthToken').value.trim() || localStorage.getItem('access_token');
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
+            try {
+                const tokenInput = document.getElementById('globalAuthToken');
+                const token = (tokenInput ? tokenInput.value.trim() : '') || localStorage.getItem('access_token');
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                return headers;
+            } catch (err) {
+                return { 'Content-Type': 'application/json' };
             }
-            return headers;
         }
 
         // Helper to log actions into Section 6 Terminal Console & History
         function logToTerminal(endpoint, status, data, latencyMs = 0) {
-            lastResponseData = data;
-            const consoleOut = document.getElementById('consoleOutput');
-            const diagnostic = document.getElementById('diagnosticPanel');
-            const timestamp = new Date().toLocaleTimeString();
-            
-            const logHeader = `[${timestamp}] ${endpoint} -> Status: ${status} (${latencyMs}ms)\n`;
-            consoleOut.textContent = logHeader + JSON.stringify(data, null, 2) + "\n\n" + consoleOut.textContent;
-            
-            document.getElementById('metricsLatencyDisplay').textContent = `${latencyMs || 12}ms`;
-            pushHistory(endpoint, status);
+            try {
+                lastResponseData = data;
+                const consoleOut = document.getElementById('consoleOutput');
+                const diagnostic = document.getElementById('diagnosticPanel');
+                const timestamp = new Date().toLocaleTimeString();
+                
+                if (consoleOut) {
+                    const logHeader = `[${timestamp}] ${endpoint} -> Status: ${status} (${latencyMs}ms)\n`;
+                    consoleOut.textContent = logHeader + JSON.stringify(data, null, 2) + "\n\n" + consoleOut.textContent;
+                }
+                
+                const latencyDisplay = document.getElementById('metricsLatencyDisplay');
+                if (latencyDisplay) latencyDisplay.textContent = `${latencyMs || 12}ms`;
+                if (typeof pushHistory === 'function') pushHistory(endpoint, status);
 
-            if (status >= 400) {
-                diagnostic.innerHTML = `<span class="text-amberWarning font-bold">Error ${status}:</span> Check payload format or verify authentication header.`;
-            } else {
-                diagnostic.innerHTML = `<span class="text-emeraldNeon font-bold">Success (${status}):</span> ${endpoint} completed in ${latencyMs || 12}ms.`;
+                if (diagnostic) {
+                    if (status >= 400) {
+                        diagnostic.innerHTML = `<span class="text-amberWarning font-bold">Error ${status}:</span> Check payload format or verify authentication header.`;
+                    } else {
+                        diagnostic.innerHTML = `<span class="text-emeraldNeon font-bold">Success (${status}):</span> ${endpoint} completed in ${latencyMs || 12}ms.`;
+                    }
+                }
+            } catch (err) {
+                console.error("logToTerminal error:", err);
             }
         }
 
-        async function testRegister() {
-            const payload = document.getElementById('regPayload').value;
+        async function testRegister(event = null) {
+            if (event && typeof event.preventDefault === 'function') {
+                event.preventDefault();
+            }
+            const payloadElem = document.getElementById('regPayload');
             const out = document.getElementById('regOutput');
+            
+            if (!payloadElem || !out) {
+                showToast('UI Elements for registration not found.', 'error');
+                return;
+            }
+
+            const payload = payloadElem.value;
             out.textContent = "Executing POST /api/v1/auth/register...\n";
             const start = performance.now();
             try {
@@ -667,9 +721,19 @@
             }
         }
 
-        async function testLogin() {
-            const rawPayload = document.getElementById('loginPayload').value;
+        async function testLogin(event = null) {
+            if (event && typeof event.preventDefault === 'function') {
+                event.preventDefault();
+            }
+            const payloadElem = document.getElementById('loginPayload');
             const out = document.getElementById('loginOutput');
+
+            if (!payloadElem || !out) {
+                showToast('UI Elements for login not found.', 'error');
+                return;
+            }
+
+            const rawPayload = payloadElem.value;
             out.textContent = "Executing POST /api/v1/auth/login...\n";
             const start = performance.now();
             try {
@@ -695,10 +759,15 @@
                 const latency = Math.round(performance.now() - start);
                 out.textContent = JSON.stringify(data, null, 2);
                 if (data.access_token) {
-                    document.getElementById('globalAuthToken').value = data.access_token;
-                    localStorage.setItem('access_token', data.access_token);
-                    out.textContent += "\n\n[SUCCESS]: JWT Token auto-injected into global header!";
-                    showToast('Login successful & JWT auto-injected!', 'success');
+                    try {
+                        const tokenInput = document.getElementById('globalAuthToken');
+                        if (tokenInput) tokenInput.value = data.access_token;
+                        localStorage.setItem('access_token', data.access_token);
+                        out.textContent += "\n\n[SUCCESS]: JWT Token auto-injected into global header!";
+                        showToast('Login successful & JWT auto-injected!', 'success');
+                    } catch (tokenErr) {
+                        showToast(`Login successful, but auto-injection storage failed: ${tokenErr.message}`, 'warning');
+                    }
                 } else {
                     showToast('Login failed: Invalid credentials', 'error');
                 }
@@ -1014,11 +1083,14 @@
             }
         }
 
+        let isAiProcessing = false;
         async function sendAiMessage() {
+            if (isAiProcessing) return;
             const input = document.getElementById('aiChatInput');
             const prompt = input.value.trim();
             if (!prompt) return;
 
+            isAiProcessing = true;
             const messagesContainer = document.getElementById('aiChatMessages');
             
             const userMsg = document.createElement('div');
@@ -1045,6 +1117,10 @@
                 const data = await res.json();
                 loadingMsg.remove();
 
+                if (!res.ok) {
+                    throw new Error(data.detail || data.message || 'AI Assistant command failed');
+                }
+
                 const aiMsg = document.createElement('div');
                 aiMsg.className = 'bg-charcoalCard border border-charcoalBorder p-2.5 rounded-xl text-textPrimary space-y-1 mr-6';
                 aiMsg.innerHTML = `
@@ -1069,6 +1145,9 @@
                 errorMsg.textContent = `Error communicating with AI Assistant: ${err.message}`;
                 messagesContainer.appendChild(errorMsg);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                showToast(`AI Error: ${err.message}`, 'error');
+            } finally {
+                isAiProcessing = false;
             }
         }
 
@@ -1086,10 +1165,16 @@
 
         window.onload = () => {
             const saved = localStorage.getItem('access_token');
+            const cardsContainer = document.getElementById('tasksListCards');
             if (saved) {
-                document.getElementById('globalAuthToken').value = saved;
+                const tokenInput = document.getElementById('globalAuthToken');
+                if (tokenInput) tokenInput.value = saved;
+                testListTasks();
+            } else {
+                if (cardsContainer) {
+                    cardsContainer.innerHTML = '<div class="text-xs text-textMuted font-mono italic p-4 text-center">Please authenticate (Inject JWT Bearer Token) to view and manage tasks.</div>';
+                }
             }
-            testListTasks();
         };
     </script>
 </body>

@@ -19,10 +19,16 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 STANDARD_RESPONSES = {
     400: {"model": ErrorResponse, "description": "Bad Request / Validation Error"},
-    401: {"model": ErrorResponse, "description": "Unauthorized / Invalid Credentials or Token"},
+    401: {
+        "model": ErrorResponse,
+        "description": "Unauthorized / Invalid Credentials or Token",
+    },
     403: {"model": ErrorResponse, "description": "Forbidden / Inactive User"},
     404: {"model": ErrorResponse, "description": "Not Found"},
-    422: {"model": ErrorResponse, "description": "Unprocessable Entity / Validation Error"},
+    422: {
+        "model": ErrorResponse,
+        "description": "Unprocessable Entity / Validation Error",
+    },
     429: {"model": ErrorResponse, "description": "Rate Limit Exceeded"},
     500: {"model": ErrorResponse, "description": "Internal Server Error"},
 }
@@ -31,7 +37,10 @@ STANDARD_RESPONSES = {
 @router.post(
     "/logout",
     status_code=status.HTTP_200_OK,
-    responses={200: {"description": "Successfully logged out and revoked session token"}, **STANDARD_RESPONSES},
+    responses={
+        200: {"description": "Successfully logged out and revoked session token"},
+        **STANDARD_RESPONSES,
+    },
     summary="User Logout",
     description="Logout currently authenticated user and revoke/blacklist the active JWT token.",
 )
@@ -39,10 +48,7 @@ async def logout_user(current_user: UserModel = Depends(get_current_active_user)
     """
     Logout currently authenticated user and revoke/blacklist the active JWT token.
     """
-    return {
-        "message": "Successfully logged out. Token revoked.",
-        "status": "success"
-    }
+    return {"message": "Successfully logged out. Token revoked.", "status": "success"}
 
 
 @router.post(
@@ -93,7 +99,9 @@ async def register_user(
     responses={
         200: {"description": "Successful Authentication - Returns JWT Bearer Token"},
         401: {"description": "Unauthorized - Incorrect email or password"},
-        422: {"description": "Unprocessable Entity - Invalid grant_type or validation error"},
+        422: {
+            "description": "Unprocessable Entity - Invalid grant_type or validation error"
+        },
         **STANDARD_RESPONSES,
     },
     summary="User Login (JWT)",
@@ -113,7 +121,9 @@ async def login_access_token(
             detail="Invalid grant_type. Expected 'password'.",
         )
 
-    result = await db.execute(select(UserModel).where(UserModel.email == form_data.username))
+    result = await db.execute(
+        select(UserModel).where(UserModel.email == form_data.username)
+    )
     user = result.scalars().first()
 
     if not user or not verify_password(form_data.password, user.hashed_password):

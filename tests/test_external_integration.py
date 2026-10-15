@@ -26,9 +26,9 @@ async def test_external_weather_success():
                 "current_weather": {
                     "temperature": 18.5,
                     "weathercode": 61,
-                    "time": "2026-10-05T12:00"
-                }
-            }
+                    "time": "2026-10-05T12:00",
+                },
+            },
         )
     )
 
@@ -58,19 +58,27 @@ async def test_ai_chat_assistant_weather():
     """
     Test AI Chat Assistant endpoint for weather prompt.
     """
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post("/api/v1/chat/assistant", json={"prompt": "Can you check weather forecast?"})
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        response = await ac.post(
+            "/api/v1/chat/assistant", json={"prompt": "Can you check weather forecast?"}
+        )
         assert response.status_code == 200
         data = response.json()
         assert data["action_executed"] == "fetch_weather"
-        assert "weather" in data["reply"].lower() or "temperature" in data["reply"].lower()
+        assert (
+            "weather" in data["reply"].lower() or "temperature" in data["reply"].lower()
+        )
 
 
 async def test_ai_chat_assistant_create_task():
     """
     Test AI Chat Assistant endpoint for creating a task via natural language.
     """
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         # Register user first so users table exists and user is present
         await ac.post(
             "/api/v1/auth/register",
@@ -80,7 +88,9 @@ async def test_ai_chat_assistant_create_task():
                 "full_name": "Chat User",
             },
         )
-        response = await ac.post("/api/v1/chat/assistant", json={"prompt": "create task Deploy Phase 4"})
+        response = await ac.post(
+            "/api/v1/chat/assistant", json={"prompt": "create task Deploy Phase 4"}
+        )
         assert response.status_code == 200
         data = response.json()
         assert data["action_executed"] == "create_task"
@@ -92,8 +102,12 @@ async def test_ai_chat_assistant_system_status():
     """
     Test AI Chat Assistant endpoint for system status.
     """
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.post("/api/v1/chat/assistant", json={"prompt": "what is system status?"})
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
+        response = await ac.post(
+            "/api/v1/chat/assistant", json={"prompt": "what is system status?"}
+        )
         assert response.status_code == 200
         data = response.json()
         assert data["action_executed"] == "system_status"

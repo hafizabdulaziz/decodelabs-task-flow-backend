@@ -364,12 +364,20 @@
 
         function showToast(message, type = 'success') {
             const container = document.getElementById('toastContainer');
+            if (!container) return;
             const toast = document.createElement('div');
-            const bgClass = type === 'success' ? 'bg-emeraldNeon/20 border-emeraldNeon/50 text-emeraldNeon' : 'bg-red-500/20 border-red-500/50 text-red-400';
-            const icon = type === 'success' ? 'fa-circle-check' : 'fa-triangle-exclamation';
+            let bgClass = 'bg-emeraldNeon/20 border-emeraldNeon/50 text-emeraldNeon';
+            let icon = 'fa-circle-check';
+            if (type === 'warning' || type === 'validation') {
+                bgClass = 'bg-amberWarning/20 border-amberWarning/50 text-amberWarning';
+                icon = 'fa-triangle-exclamation';
+            } else if (type === 'error') {
+                bgClass = 'bg-red-500/20 border-red-500/50 text-red-400';
+                icon = 'fa-circle-xmark';
+            }
             
             toast.className = `pointer-events-auto flex items-center space-x-2 px-4 py-3 rounded-xl border ${bgClass} shadow-xl backdrop-blur text-xs font-mono transition transform translate-y-2 opacity-0 duration-300`;
-            toast.innerHTML = `<i class="fa-solid ${icon}"><span>${escapeHtml(message)}</span>`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i><span>${escapeHtml(message)}</span>`;
             
             container.appendChild(toast);
             setTimeout(() => {
@@ -382,67 +390,166 @@
             }, 3500);
         }
 
-        function injectAuthToken() {
-            const token = document.getElementById('globalAuthToken').value.trim();
-            if (token) {
-                localStorage.setItem('access_token', token);
-                showToast('JWT Bearer token successfully injected and stored!', 'success');
-            } else {
-                showToast('Please enter a valid token.', 'error');
+        function injectAuthToken(event = null) {
+            if (event && typeof event.preventDefault === 'function') {
+                event.preventDefault();
+            }
+            try {
+                const tokenInput = document.getElementById('globalAuthToken');
+                if (!tokenInput) {
+                    showToast('Auth token input element not found.', 'error');
+                    return;
+                }
+                const token = tokenInput.value.trim();
+                if (token) {
+                    localStorage.setItem('access_token', token);
+                    showToast('JWT Bearer token successfully injected and stored!', 'success');
+                } else {
+                    showToast('Please enter a valid token.', 'error');
+                }
+            } catch (err) {
+                showToast(`Token injection error: ${err.message}`, 'error');
             }
         }
 
         function clearAuthToken() {
-            document.getElementById('globalAuthToken').value = '';
-            localStorage.removeItem('access_token');
-            showToast('Auth token cleared from session.', 'success');
+            try {
+                const tokenInput = document.getElementById('globalAuthToken');
+                if (tokenInput) tokenInput.value = '';
+                localStorage.removeItem('access_token');
+                showToast('Auth token cleared from session.', 'success');
+            } catch (err) {
+                showToast(`Error clearing token: ${err.message}`, 'error');
+            }
         }
 
         function getAuthHeaders() {
-            const token = document.getElementById('globalAuthToken').value.trim() || localStorage.getItem('access_token');
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) {
-                headers['Authorization'] = `Bearer ${token}`;
+            try {
+                const tokenInput = document.getElementById('globalAuthToken');
+                const token = (tokenInput ? tokenInput.value.trim() : '') || localStorage.getItem('access_token');
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) {
+                    headers['Authorization'] = `Bearer ${token}`;
+                }
+                return headers;
+            } catch (err) {
+                return { 'Content-Type': 'application/json' };
             }
-            return headers;
         }
 
-        async function testRegister() {
-            const payload = document.getElementById('regPayload').value;
+        function parseJsonOrExtract(raw) {
+            try {
+                return JSON.parse(raw);
+            } catch (e1) {
+                try {
+                    const cleaned = raw.replace(/,\s*([\]}])/g, '$1');
+                    return JSON.parse(cleaned);
+                } catch (e2) {
+                    const emailMatch = raw.match(/["']?(email|username|user)["']?\s*[:=]\s*["']([^"']+)["']/i);
+                    const pwdMatch = raw.match(/["']?password["']?\s*[:=]\s*["']([^"']+)["']/i);
+                    const nameMatch = raw.match(/["']?(full_name|name)["']?\s*[:=]\s*["']([^"']+)["']/i);
+                    const titleMatch = raw.match(/["']?title["']?\s*[:=]\s*["']([^"']+)["']/i);
+                    const descMatch = raw.match(/["']?description["']?\s*[:=]\s*["']([^"']+)["']/i);
+                    const statusMatch = raw.match(/["']?status["']?\s*[:=]\s*["']([^"']+)["']/i);
+                    const priorityMatch = raw.match(/["']?priority["']?\s*[:=]\s*["']([^"']+)["']/i);
+
+                    const result = {};
+                    if (emailMatch) result.email = emailMatch[2];
+                    if (pwdMatch) result.password = pwdMatch[2];
+                    if (nameMatch) result.full_name = nameMatch[2];
+                    if (titleMatch) result.title = titleMatch[2];
+                    if (descMatch) result.description = descMatch[2];
+                    if (statusMatch) result.status = statusMatch[2];
+                    if (priorityMatch) result.priority = priorityMatch[2];
+
+                    if (Object.keys(result).length > 0) {
+                        return result;
+                    }
+                    throw e1;
+                }
+            }
+        }
+
+        async function testRegister(event = null) {
+            if (event && typeof event.preventDefault === 'function') {
+                event.preventDefault();
+            }
+            const payloadElem = document.getElementById('regPayload');
             const out = document.getElementById('regOutput');
+            
+            if (!payloadElem || !out) {
+                showToast('UI Elements for registration not found.', 'error');
+                return;
+            }
+
+            const rawPayload = payloadElem.value.trim();
+            let parsed;
+            try {
+                parsed = parseJsonOrExtract(rawPayload);
+                if (!parsed.email || !parsed.email.includes('@')) {
+                    showToast('Validation Warning: Invalid email format in register payload.', 'warning');
+                    return;
+                }
+                if (!parsed.password || parsed.password.length < 6) {
+                    showToast('Validation Warning: Password must be at least 6 characters.', 'warning');
+                    return;
+                }
+            } catch (e) {
+                showToast('Validation Warning: Register payload must be valid JSON.', 'warning');
+                return;
+            }
+
             out.textContent = "Executing POST /api/v1/auth/register...\n";
             try {
                 const res = await fetch('/api/v1/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: payload
+                    body: JSON.stringify(parsed)
                 });
                 const data = await res.json();
                 out.textContent = JSON.stringify(data, null, 2);
                 if (res.ok) {
-                    showToast('User registered successfully!', 'success');
+                    showToast('User registered successfully! Account created.', 'success');
                 } else {
-                    showToast(`Registration failed: ${data.detail || 'Check payload'}`, 'error');
+                    const errDetail = data.detail || data.message || 'Check registration payload';
+                    showToast(`Registration failed: ${errDetail}`, 'error');
                 }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
-                showToast(`Error: ${err.message}`, 'error');
+                showToast(`Network Error: ${err.message}`, 'error');
             }
         }
 
-        async function testLogin() {
-            const rawPayload = document.getElementById('loginPayload').value;
+        async function testLogin(event = null) {
+            if (event && typeof event.preventDefault === 'function') {
+                event.preventDefault();
+            }
+            const payloadElem = document.getElementById('loginPayload');
             const out = document.getElementById('loginOutput');
+
+            if (!payloadElem || !out) {
+                showToast('UI Elements for login not found.', 'error');
+                return;
+            }
+
+            const rawPayload = payloadElem.value.trim();
+            let email = "user@example.com";
+            let password = "SecurePassword123!";
+            try {
+                const parsed = parseJsonOrExtract(rawPayload);
+                email = parsed.email || parsed.username || email;
+                password = parsed.password || password;
+                if (!email || !email.includes('@')) {
+                    showToast('Validation Warning: Please provide a valid email in login payload.', 'warning');
+                    return;
+                }
+            } catch (e) {
+                showToast('Validation Warning: Login payload must be valid JSON.', 'warning');
+                return;
+            }
+
             out.textContent = "Executing POST /api/v1/auth/login...\n";
             try {
-                let email = "user@example.com";
-                let password = "SecurePassword123!";
-                try {
-                    const parsed = JSON.parse(rawPayload);
-                    email = parsed.email || parsed.username || email;
-                    password = parsed.password || password;
-                } catch (e) {}
-
                 const formData = new URLSearchParams();
                 formData.append('username', email);
                 formData.append('password', password);
@@ -455,13 +562,19 @@
                 });
                 const data = await res.json();
                 out.textContent = JSON.stringify(data, null, 2);
-                if (data.access_token) {
-                    document.getElementById('globalAuthToken').value = data.access_token;
-                    localStorage.setItem('access_token', data.access_token);
-                    out.textContent += "\n\n[SUCCESS]: JWT Token auto-injected into global header!";
-                    showToast('Login successful & JWT auto-injected!', 'success');
+                if (res.ok && data.access_token) {
+                    try {
+                        const tokenInput = document.getElementById('globalAuthToken');
+                        if (tokenInput) tokenInput.value = data.access_token;
+                        localStorage.setItem('access_token', data.access_token);
+                        out.textContent += "\n\n[SUCCESS]: JWT Token auto-injected into global header!";
+                        showToast('Login successful & JWT Bearer token auto-injected!', 'success');
+                    } catch (tokenErr) {
+                        showToast(`Login successful, but auto-injection storage failed: ${tokenErr.message}`, 'warning');
+                    }
                 } else {
-                    showToast('Login failed: Invalid credentials', 'error');
+                    const errDetail = data.detail || data.message || 'Invalid credentials or inactive account';
+                    showToast(`Login failed: ${errDetail}`, 'error');
                 }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
@@ -480,7 +593,7 @@
                 const data = await res.json();
                 out.textContent = JSON.stringify(data, null, 2);
                 clearAuthToken();
-                showToast('Successfully logged out and token revoked.', 'success');
+                showToast('Successfully logged out and session revoked.', 'success');
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
                 showToast(`Logout error: ${err.message}`, 'error');
@@ -512,7 +625,7 @@
                 const data = await res.json();
                 out.textContent = JSON.stringify(data, null, 2);
 
-                if (Array.isArray(data)) {
+                if (res.ok && Array.isArray(data)) {
                     countBadge.textContent = `${data.length} tasks found`;
                     if (data.length === 0) {
                         cardsContainer.innerHTML = '<div class="text-xs text-textMuted font-mono italic p-4 text-center">No tasks match the filter criteria.</div>';
@@ -541,30 +654,48 @@
                             cardsContainer.appendChild(card);
                         });
                     }
+                } else {
+                    const errDetail = data.detail || data.message || 'Unauthorized or failed to list tasks';
+                    cardsContainer.innerHTML = `<div class="text-xs text-red-400 font-mono p-4">Error loading tasks: ${escapeHtml(errDetail)}</div>`;
+                    showToast(`Failed to list tasks: ${errDetail}`, 'error');
                 }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
                 cardsContainer.innerHTML = `<div class="text-xs text-red-400 font-mono p-4">Error loading tasks: ${err.message}</div>`;
+                showToast(`Error: ${err.message}`, 'error');
             }
         }
 
         async function testCreateTask() {
-            const payload = document.getElementById('taskCreatePayload').value;
+            const rawPayload = document.getElementById('taskCreatePayload').value.trim();
             const out = document.getElementById('taskCreateOutput');
+
+            try {
+                const parsed = JSON.parse(rawPayload);
+                if (!parsed.title || parsed.title.trim().length === 0) {
+                    showToast('Validation Error: Task title cannot be empty.', 'error');
+                    return;
+                }
+            } catch (e) {
+                showToast('Validation Error: Task create payload must be valid JSON.', 'error');
+                return;
+            }
+
             out.textContent = "Executing POST /api/v1/tasks/...\n";
             try {
                 const res = await fetch('/api/v1/tasks/', {
                     method: 'POST',
                     headers: getAuthHeaders(),
-                    body: payload
+                    body: rawPayload
                 });
                 const data = await res.json();
                 out.textContent = JSON.stringify(data, null, 2);
                 if (res.ok) {
-                    showToast('Task created successfully!', 'success');
+                    showToast(`Task #${data.id} created successfully! UI state synchronized.`, 'success');
                     testListTasks();
                 } else {
-                    showToast(`Failed to create task: ${data.detail || 'Check payload'}`, 'error');
+                    const errDetail = data.detail || data.message || 'Check task payload or authentication token';
+                    showToast(`Failed to create task: ${errDetail}`, 'error');
                 }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
@@ -586,11 +717,22 @@
 
         async function testUpdateTask() {
             const taskId = document.getElementById('updateTaskId').value.trim();
-            const payload = document.getElementById('taskUpdatePayload').value;
+            const rawPayload = document.getElementById('taskUpdatePayload').value.trim();
             const out = document.getElementById('taskUpdateOutput');
             
-            if (!taskId) {
-                showToast('Please provide a valid Task ID to update.', 'error');
+            if (!taskId || isNaN(taskId) || parseInt(taskId) <= 0) {
+                showToast('Validation Error: Please provide a valid positive Task ID to update.', 'error');
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(rawPayload);
+                if (parsed.title !== undefined && parsed.title.trim().length === 0) {
+                    showToast('Validation Error: Task title cannot be empty if provided.', 'error');
+                    return;
+                }
+            } catch (e) {
+                showToast('Validation Error: Task update payload must be valid JSON.', 'error');
                 return;
             }
 
@@ -599,15 +741,16 @@
                 const res = await fetch(`/api/v1/tasks/${taskId}`, {
                     method: 'PATCH',
                     headers: getAuthHeaders(),
-                    body: payload
+                    body: rawPayload
                 });
                 const data = await res.json();
                 out.textContent = JSON.stringify(data, null, 2);
                 if (res.ok) {
-                    showToast(`Task #${taskId} updated successfully!`, 'success');
+                    showToast(`Task #${taskId} updated successfully! UI state synchronized.`, 'success');
                     testListTasks();
                 } else {
-                    showToast(`Failed to update task: ${data.detail || 'Check payload'}`, 'error');
+                    const errDetail = data.detail || data.message || 'Task not found or unauthorized';
+                    showToast(`Failed to update task: ${errDetail}`, 'error');
                 }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
@@ -636,16 +779,34 @@
                     method: 'DELETE',
                     headers: getAuthHeaders()
                 });
-                showToast(`Task #${taskId} deleted successfully!`, 'success');
-                testListTasks();
+                if (res.ok || res.status === 204) {
+                    showToast(`Task #${taskId} deleted successfully! UI state synchronized.`, 'success');
+                    testListTasks();
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    const errDetail = data.detail || data.message || 'Task not found or unauthorized';
+                    showToast(`Failed to delete task: ${errDetail}`, 'error');
+                }
             } catch (err) {
                 showToast(`Error deleting task: ${err.message}`, 'error');
             }
         };
 
         async function testFetchWeather() {
-            const lat = document.getElementById('weatherLat').value || 52.52;
-            const lon = document.getElementById('weatherLon').value || 13.41;
+            const latInput = document.getElementById('weatherLat').value;
+            const lonInput = document.getElementById('weatherLon').value;
+            const lat = parseFloat(latInput);
+            const lon = parseFloat(lonInput);
+
+            if (isNaN(lat) || lat < -90 || lat > 90) {
+                showToast('Validation Error: Latitude must be between -90 and 90.', 'error');
+                return;
+            }
+            if (isNaN(lon) || lon < -180 || lon > 180) {
+                showToast('Validation Error: Longitude must be between -180 and 180.', 'error');
+                return;
+            }
+
             const out = document.getElementById('weatherOutput');
             out.textContent = `Executing GET /api/v1/external/weather?latitude=${lat}&longitude=${lon}...\n`;
             try {
@@ -656,9 +817,10 @@
                 const data = await res.json();
                 out.textContent = JSON.stringify(data, null, 2);
                 if (res.ok) {
-                    showToast('Weather data fetched successfully!', 'success');
+                    showToast('Weather data facade fetched successfully!', 'success');
                 } else {
-                    showToast('Failed to fetch weather data', 'error');
+                    const errDetail = data.detail || data.message || 'External weather service unavailable';
+                    showToast(`Weather fetch failed: ${errDetail}`, 'error');
                 }
             } catch (err) {
                 out.textContent = `Error: ${err.message}`;
@@ -686,11 +848,14 @@
             }
         }
 
+        let isAiProcessing = false;
         async function sendAiMessage() {
+            if (isAiProcessing) return;
             const input = document.getElementById('aiChatInput');
             const prompt = input.value.trim();
             if (!prompt) return;
 
+            isAiProcessing = true;
             const messagesContainer = document.getElementById('aiChatMessages');
             
             const userMsg = document.createElement('div');
@@ -716,6 +881,10 @@
                 const data = await res.json();
                 loadingMsg.remove();
 
+                if (!res.ok) {
+                    throw new Error(data.detail || data.message || 'AI Assistant command failed');
+                }
+
                 const aiMsg = document.createElement('div');
                 aiMsg.className = 'bg-charcoalCard border border-charcoalBorder p-2.5 rounded-xl text-textPrimary space-y-1 mr-6';
                 aiMsg.innerHTML = `
@@ -736,19 +905,35 @@
             } catch (err) {
                 loadingMsg.remove();
                 const errorMsg = document.createElement('div');
-                errorMsg.className = 'bg-red-500/20 border border-red-500/40 p-2.5 rounded-xl text-red-400';
-                errorMsg.textContent = `Error communicating with AI Assistant: ${err.message}`;
+                errorMsg.className = 'bg-red-500/20 border border-red-500/40 p-2.5 rounded-xl text-red-400 space-y-1 mr-6';
+                errorMsg.innerHTML = `
+                    <div class="text-[10px] text-red-400 font-bold flex justify-between">
+                        <span>AI Assistant Error Recovery</span>
+                        <span class="font-mono">[failed]</span>
+                    </div>
+                    <div>${escapeHtml(err.message)}</div>
+                    <div class="text-[10px] text-textMuted pt-1">Fallback: Try simpler commands like "check weather", "create task [title]", or check server status.</div>
+                `;
                 messagesContainer.appendChild(errorMsg);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                showToast(`AI Error: ${err.message}`, 'error');
+            } finally {
+                isAiProcessing = false;
             }
         }
 
         window.onload = () => {
             const saved = localStorage.getItem('access_token');
+            const cardsContainer = document.getElementById('tasksListCards');
             if (saved) {
-                document.getElementById('globalAuthToken').value = saved;
+                const tokenInput = document.getElementById('globalAuthToken');
+                if (tokenInput) tokenInput.value = saved;
+                testListTasks();
+            } else {
+                if (cardsContainer) {
+                    cardsContainer.innerHTML = '<div class="text-xs text-textMuted font-mono italic p-4 text-center">Please authenticate (Inject JWT Bearer Token) to view and manage tasks.</div>';
+                }
             }
-            testListTasks();
         };
     </script>
 </body>

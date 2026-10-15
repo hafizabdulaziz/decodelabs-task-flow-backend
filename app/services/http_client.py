@@ -11,6 +11,7 @@ class HTTPClientManager:
     """
     Manager for asynchronous HTTP client with strict timeout control (The Messenger).
     """
+
     def __init__(self) -> None:
         self.client: Optional[httpx.AsyncClient] = None
 
@@ -19,7 +20,7 @@ class HTTPClientManager:
             self.client = httpx.AsyncClient(
                 base_url=settings.EXTERNAL_API_BASE_URL,
                 timeout=httpx.Timeout(settings.EXTERNAL_API_TIMEOUT),
-                headers={"Authorization": f"Bearer {settings.EXTERNAL_API_KEY}"}
+                headers={"Authorization": f"Bearer {settings.EXTERNAL_API_KEY}"},
             )
 
     async def close_client(self) -> None:
@@ -27,7 +28,9 @@ class HTTPClientManager:
             await self.client.aclose()
             self.client = None
 
-    async def get(self, url: str, params: Optional[Dict[str, Any]] = None) -> httpx.Response:
+    async def get(
+        self, url: str, params: Optional[Dict[str, Any]] = None
+    ) -> httpx.Response:
         if not self.client:
             await self.init_client()
         assert self.client is not None

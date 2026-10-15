@@ -14,6 +14,7 @@ class TaskSortField(str, enum.Enum):
     """
     Allowed task sorting fields.
     """
+
     CREATED_AT = "created_at"
     UPDATED_AT = "updated_at"
     DUE_DATE = "due_date"
@@ -60,6 +61,7 @@ class TaskBase(BaseModel):
     """
     Base task schema with common fields.
     """
+
     title: str = Field(..., min_length=1, max_length=255)
     description: str | None = Field(default=None, max_length=5000)
     status: NormTaskStatus = TaskStatus.PENDING
@@ -71,6 +73,7 @@ class TaskCreate(TaskBase):
     """
     Schema for creating a new task.
     """
+
     pass
 
 
@@ -78,6 +81,7 @@ class TaskUpdate(BaseModel):
     """
     Schema for updating an existing task (partial updates supported).
     """
+
     title: str | None = Field(default=None, min_length=1, max_length=255)
     description: str | None = Field(default=None, max_length=5000)
     status: NormTaskStatus | None = None
@@ -89,11 +93,10 @@ class TaskResponse(TaskBase):
     """
     Schema for serializing task responses.
     """
+
     id: int
     owner_id: int
     created_at: datetime
     updated_at: datetime
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = {"from_attributes": True}

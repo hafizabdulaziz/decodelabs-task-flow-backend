@@ -11,6 +11,7 @@ class Base(DeclarativeBase):
     """
     Base class for all SQLAlchemy ORM models.
     """
+
     pass
 
 
@@ -18,6 +19,7 @@ class TimestampMixin:
     """
     Mixin adding created_at and updated_at timestamp columns with timezone support.
     """
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

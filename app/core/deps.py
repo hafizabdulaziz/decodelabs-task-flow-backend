@@ -65,7 +65,10 @@ def has_role(allowed_roles: List[str]):
     Dependency factory enforcing granular Role-Based Access Control (RBAC).
     Returns 401 if unauthenticated, or 403 if user role is not permitted.
     """
-    async def role_dependency(current_user: UserModel = Depends(get_current_active_user)) -> UserModel:
+
+    async def role_dependency(
+        current_user: UserModel = Depends(get_current_active_user),
+    ) -> UserModel:
         user_role = getattr(current_user, "role", "USER")
         if user_role not in allowed_roles and not current_user.is_superuser:
             raise HTTPException(
@@ -73,4 +76,5 @@ def has_role(allowed_roles: List[str]):
                 detail=f"Access forbidden: requires one of roles {allowed_roles}",
             )
         return current_user
+
     return role_dependency

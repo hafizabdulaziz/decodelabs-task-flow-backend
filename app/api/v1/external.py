@@ -24,7 +24,13 @@ STANDARD_RESPONSES = {
     "/weather",
     response_model=ClientThirdPartyDataResponse,
     status_code=status.HTTP_200_OK,
-    responses={200: {"model": ClientThirdPartyDataResponse, "description": "Weather data successfully fetched"}, **STANDARD_RESPONSES},
+    responses={
+        200: {
+            "model": ClientThirdPartyDataResponse,
+            "description": "Weather data successfully fetched",
+        },
+        **STANDARD_RESPONSES,
+    },
     summary="Get External Weather Facade",
     description="Fetch sanitized external weather data via the Backend Facade proxy (The Vault, Messenger, Translator, Shield).",
 )

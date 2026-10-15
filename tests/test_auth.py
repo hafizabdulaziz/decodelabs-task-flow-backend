@@ -9,7 +9,9 @@ from app.main import app
 
 @pytest.mark.anyio
 async def test_register_user():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response = await ac.post(
             "/api/v1/auth/register",
             json={
@@ -33,7 +35,9 @@ async def test_register_duplicate_email():
         "password": "SecurePassword123!",
         "full_name": "Bob Builder",
     }
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         response1 = await ac.post("/api/v1/auth/register", json=payload)
         assert response1.status_code == 201
 
@@ -49,7 +53,9 @@ async def test_login_and_get_profile():
         "password": "SecurePassword123!",
         "full_name": "Charlie Brown",
     }
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         # Register user
         reg_resp = await ac.post("/api/v1/auth/register", json=user_payload)
         assert reg_resp.status_code == 201
@@ -94,7 +100,9 @@ async def test_login_invalid_grant_type():
         "password": "SecurePassword123!",
         "full_name": "David Bowie",
     }
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as ac:
         reg_resp = await ac.post("/api/v1/auth/register", json=user_payload)
         assert reg_resp.status_code == 201
 
@@ -110,5 +118,3 @@ async def test_login_invalid_grant_type():
         data = login_resp.json()
         assert data["error_code"] == "VALIDATION_ERROR"
         assert "grant_type" in data["message"]
-
-

@@ -17,6 +17,7 @@ class TaskStatus(str, enum.Enum):
     """
     Task status enumeration.
     """
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -26,6 +27,7 @@ class TaskPriority(str, enum.Enum):
     """
     Task priority enumeration.
     """
+
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
@@ -35,6 +37,7 @@ class TaskModel(Base, TimestampMixin):
     """
     Task database model representing tasks owned by users.
     """
+
     __tablename__ = "tasks"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True, autoincrement=True)
@@ -50,8 +53,12 @@ class TaskModel(Base, TimestampMixin):
         default=TaskPriority.MEDIUM,
         nullable=False,
     )
-    due_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    due_date: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    owner_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
 
     # Relationship back to user
     owner: Mapped["UserModel"] = relationship("UserModel", back_populates="tasks")

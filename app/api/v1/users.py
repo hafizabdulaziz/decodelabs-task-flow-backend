@@ -29,7 +29,13 @@ STANDARD_RESPONSES = {
     "/me",
     response_model=UserResponse,
     status_code=status.HTTP_200_OK,
-    responses={200: {"model": UserResponse, "description": "User profile retrieved successfully"}, **STANDARD_RESPONSES},
+    responses={
+        200: {
+            "model": UserResponse,
+            "description": "User profile retrieved successfully",
+        },
+        **STANDARD_RESPONSES,
+    },
     summary="Get Current User Profile",
     description="Get profile details of the currently authenticated active user.",
 )
@@ -46,7 +52,13 @@ async def get_current_user_profile(
     "/me",
     response_model=UserResponse,
     status_code=status.HTTP_200_OK,
-    responses={200: {"model": UserResponse, "description": "User profile updated successfully"}, **STANDARD_RESPONSES},
+    responses={
+        200: {
+            "model": UserResponse,
+            "description": "User profile updated successfully",
+        },
+        **STANDARD_RESPONSES,
+    },
     summary="Update Current User Profile",
     description="Update profile details of the currently authenticated active user (full_name, password, is_active).",
 )

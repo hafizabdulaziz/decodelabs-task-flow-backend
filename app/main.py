@@ -50,6 +50,7 @@ app = FastAPI(
 # Mount static files
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+
 @app.get("/docs", include_in_schema=False)
 async def custom_api_control_center():
     """
@@ -58,6 +59,7 @@ async def custom_api_control_center():
     with open("app/templates/index.html", "r", encoding="utf-8") as f:
         html_content = f.read()
     return HTMLResponse(content=html_content)
+
 
 # 8.2 CORS Middleware Configuration
 app.add_middleware(
@@ -76,7 +78,9 @@ async def add_process_time_header(request: Request, call_next):
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = f"{process_time:.4f}s"
-    logger.info(f"Method: {request.method} Path: {request.url.path} Status: {response.status_code} Duration: {process_time:.4f}s")
+    logger.info(
+        f"Method: {request.method} Path: {request.url.path} Status: {response.status_code} Duration: {process_time:.4f}s"
+    )
     return response
 
 
@@ -112,8 +116,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         loc = " -> ".join(str(part) for part in err.get("loc", []))
         msg = err.get("msg", "Validation error")
         messages.append(f"{loc}: {msg}" if loc else msg)
-    message_str = "; ".join(messages) if messages else "Invalid request validation data."
-    error_resp = ErrorResponse.create(error_code="VALIDATION_ERROR", message=message_str)
+    message_str = (
+        "; ".join(messages) if messages else "Invalid request validation data."
+    )
+    error_resp = ErrorResponse.create(
+        error_code="VALIDATION_ERROR", message=message_str
+    )
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
         content=error_resp.model_dump(),
@@ -123,7 +131,9 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Unhandled error: {exc}", exc_info=True)
-    error_resp = ErrorResponse.create(error_code="INTERNAL_SERVER_ERROR", message="Internal server error occurred.")
+    error_resp = ErrorResponse.create(
+        error_code="INTERNAL_SERVER_ERROR", message="Internal server error occurred."
+    )
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content=error_resp.model_dump(),
@@ -147,7 +157,7 @@ async def root():
     return {
         "message": "Welcome to Decodelabs Task Flow API",
         "environment": settings.APP_ENV,
-        "status": "active"
+        "status": "active",
     }
 
 
@@ -156,6 +166,4 @@ async def health_check():
     """
     Health check endpoint to verify service readiness.
     """
-    return {
-        "status": "healthy"
-    }
+    return {"status": "healthy"}

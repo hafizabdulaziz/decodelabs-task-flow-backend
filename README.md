@@ -1,197 +1,195 @@
-# 🚀 Decodelabs Task Flow Backend
+# Task Flow Backend (`task-flow-backend`)
 
-Production-grade, fully tested, secure, and deployment-ready RESTful Task Management API built with Python (FastAPI), Async SQLAlchemy, Alembic, PostgreSQL (Neon), Argon2, JWT, and Docker.
-
----
-
-## 📌 Project Overview
-Decodelabs Task Flow Backend is an enterprise-ready backend application designed for robust task management. It implements clean architecture separation (API routers, services, database models, Pydantic schemas, and core security modules) with full asynchronous support.
+Production-grade, asynchronous enterprise FastAPI backend engineered with robust security, asynchronous database operations, rate limiting, external service facades, and comprehensive automated test coverage.
 
 ---
 
-## 🛠️ Tech Stack & Architecture
-- **Phase 10 (Completed):** Final Audit, Build Validation & Portfolio Polish.
-- **Database & ORM:** PostgreSQL (Neon Serverless) via SQLAlchemy (Async)
-- **Migrations:** Alembic (Async env setup)
-- **Security:** Argon2 password hashing (via `passlib`) & JWT authentication (via `python-jose`)
-- **Validation & Settings:** Pydantic v2 & Pydantic-Settings
-- **Testing:** Pytest & Pytest-Asyncio (100% passing with zero warnings)
-- **Code Quality:** Ruff (Linting & Formatting) & Mypy (Static Type Checking)
-- **Containerization & Deployment:** Docker, Docker Compose, Vercel
+## 🚀 Technical Summary & Stack
+
+- **Framework:** [FastAPI v0.115.8](https://fastapi.tiangolo.com/) running on [Uvicorn v0.34.0](https://www.uvicorn.org/)
+- **Data Validation & Serialization:** [Pydantic v2.10.6](https://docs.pydantic.dev/) with strict type enforcement
+- **Database ORM:** [SQLAlchemy v2.0.38](https://www.sqlalchemy.org/) (Async engine with `asyncpg` for PostgreSQL and `aiosqlite` for testing)
+- **Migrations:** [Alembic v1.14.1](https://alembic.sqlalchemy.org/)
+- **Security & Authentication:** `python-jose` (JWT Bearer tokens), `passlib` with Argon2 password hashing
+- **Rate Limiting:** Sliding-window rate limiter middleware with configurable limits and standard headers (`X-RateLimit-*`)
+- **Resilience & External Services:** HTTPX-based resilient HTTP client with timeout, retry, and circuit-breaker patterns interfacing with Open-Meteo weather API
+- **Testing Suite:** [Pytest v8.3.4](https://docs.pytest.org/) with `pytest-asyncio` and `respx` mock routing (100% passing test suite)
+- **Code Quality & Linting:** [Ruff v0.9.5](https://astral.sh/ruff) and [Mypy v1.15.0](https://mypy.readthedocs.io/)
 
 ---
 
-## 🗂️ Directory Structure
-```text
+## 📂 Architecture & Directory Layout
+
+```tree
 task-flow-backend/
-├── alembic/                # Database migrations
+├── alembic/                 # Database migration scripts & env configuration
+│   ├── env.py
+│   └── versions/            # Revision migration scripts
 ├── app/
-│   ├── api/v1/             # API Endpoints (auth, users, tasks)
-│   ├── core/               # Security, JWT, dependency injection
-│   ├── db/                 # Database session & base models
-│   ├── models/             # SQLAlchemy ORM models (User, Task)
-│   ├── schemas/            # Pydantic validation schemas
-│   ├── config.py           # Application settings
-│   └── main.py             # FastAPI entrypoint & middleware
-├── tests/                  # Automated integration tests
-├── Dockerfile              # Production container build
-├── docker-compose.yml      # Local container orchestration
-├── vercel.json             # Vercel deployment config
-├── requirements.txt        # Pinned project dependencies
-└── PLAN.md / PROGRESS.md   # Project planning and tracking
+│   ├── api/v1/              # Version 1 API routers
+│   │   ├── auth.py          # Authentication (register, login, logout token revocation)
+│   │   ├── chat.py          # AI Assistant widget controller & agentic command dispatcher
+│   │   ├── external.py      # Third-party facade proxy (Open-Meteo weather integration)
+│   │   ├── system.py        # System health & telemetry endpoints
+│   │   ├── tasks.py         # Task CRUD, filtering, pagination & search
+│   │   └── users.py         # User profile & account management (/users/me)
+│   ├── core/                # Core enterprise infrastructure
+│   │   ├── config.py        # Pydantic Settings environment configuration
+│   │   ├── deps.py          # FastAPI dependency injection (current user, DB session)
+│   │   ├── jwt.py           # JWT token generation & payload decoding
+│   │   ├── rate_limit.py    # Rate limiting middleware & sliding window tracker
+│   │   └── security.py      # Password hashing (Argon2) & verification utilities
+│   ├── db/                  # Database session management
+│   │   ├── base.py          # Declarative base & metadata registry
+│   │   └── session.py       # Async session factory (`async_sessionmaker`)
+│   ├── models/              # SQLAlchemy ORM database models
+│   │   ├── task.py          # Task entity model (id, title, description, status, priority, owner_id)
+│   │   └── user.py          # User entity model (id, email, hashed_password, full_name, is_active, role)
+│   ├── schemas/             # Pydantic v2 data transfer objects (DTOs)
+│   │   ├── error.py         # Standardized error response schema
+│   │   ├── external.py      # External weather response schema
+│   │   ├── task.py          # Task creation, update, filter & response schemas
+│   │   └── user.py          # User registration, login & response schemas
+│   ├── services/            # Business logic & external service integration
+│   │   ├── external_service.py # Open-Meteo facade service wrapper
+│   │   └── http_client.py   # Reusable async HTTP client wrapper
+│   ├── static/              # Frontend static assets (CSS stylesheets)
+│   ├── templates/           # Embedded Control Center dashboard & UI templates
+│   │   ├── dashboard.html   # Full API Control Center dashboard
+│   │   └── index.html       # Streamlined API gateway dashboard
+│   └── main.py              # FastAPI application factory, middleware & exception handlers
+├── tests/                   # Comprehensive Pytest test suite
+│   ├── conftest.py          # Async test fixtures, test database setup & client overrides
+│   ├── test_auth.py         # Authentication & token revocation tests
+│   ├── test_errors.py       # Global centralized exception handling tests
+│   ├── test_external_integration.py # Mocked external facade (Respx) tests
+│   ├── test_rate_limit.py   # Rate limiting header & threshold tests
+│   ├── test_rbac.py         # Role-Based Access Control (RBAC) tests
+│   ├── test_security.py     # Password hashing & JWT security tests
+│   └── test_tasks.py        # Task CRUD, filtering, search & ownership tests
+├── .env.example             # Environment variable template
+├── alembic.ini              # Alembic configuration
+├── Dockerfile               # Production container definition
+├── docker-compose.yml       # Multi-container local orchestration (App + PostgreSQL)
+├── mypy.ini                 # Static type checking configuration
+├── pytest.ini               # Pytest configuration
+├── requirements.txt         # Exact Python package dependencies
+└── run.bat                  # Windows startup batch script
 ```
 
 ---
 
-## 🚀 Getting Started
+## ⚙️ Environment Setup & Configuration
 
-### 1. Clone & Set Up Virtual Environment
-```bash
-python -m venv venv
-# Windows:
-venv\Scripts\activate
-# Unix/Mac:
-source venv/bin/activate
-```
-
-### 2. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Configure Environment Variables
-Create a `.env` file based on `.env.example`:
-```env
-DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/task_flow
-JWT_SECRET_KEY=your_super_secret_key_here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-APP_ENV=development
-```
-
-### 4. Run Database Migrations
-```bash
-alembic upgrade head
-```
-
-### 5. Run the Application
-```bash
-uvicorn app.main:app --reload
-```
-
----
-
-## 🔑 Authentication & Swagger UI Guide
-To test authentication and execute requests via Swagger UI (`http://127.0.0.1:8000/docs`) or API clients:
-1. **Login Endpoint (`POST /api/v1/auth/login`)**: Send a clean JSON payload containing `email` and `password`.
+1. Clone the repository and navigate to the project directory:
    ```bash
-   curl -X 'POST' \
-     'http://127.0.0.1:8000/api/v1/auth/login' \
-     -H 'accept: application/json' \
-     -H 'Content-Type: application/json' \
-     -d '{
-       "email": "user@example.com",
-       "password": "SecurePassword123!"
-     }'
+   cd task-flow-backend
    ```
-2. Receive the JWT `access_token` in response.
-3. Click the **Authorize** button at the top of Swagger UI (or pass `-H "Authorization: Bearer <token>"` in cURL) to authenticate protected endpoints (`/users/me`, `/tasks/`, etc.).
+
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv venv
+   # On Windows:
+   venv\Scripts\activate
+   # On Linux/macOS:
+   source venv/bin/activate
+   ```
+
+3. Install exact dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Configure environment variables (`.env`):
+   Copy `.env.example` to `.env` and configure your database URL and secret keys:
+   ```env
+   DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/task_flow_db
+   SECRET_KEY=your-super-secret-jwt-key-change-in-production
+   ALGORITHM=HS256
+   ACCESS_TOKEN_EXPIRE_MINUTES=30
+   RATE_LIMIT_PER_MINUTE=1000
+   ```
+   *(For local testing without PostgreSQL, SQLite async fallback `sqlite+aiosqlite:///./task_flow.db` is supported).*
 
 ---
 
-## 🚨 Standardized Global Exception Handling & Error Schemas
-Sentinel Auth Vault implements a strict, centralized global exception handling mechanism catching `HTTPException`, `RequestValidationError`, and unhandled system errors (`Exception`). All API error responses conform to a uniform Pydantic schema:
+## 🗄️ Database Migrations & Local Execution
 
-| Field | Type | Description |
-| :--- | :--- | :--- |
-| `error_code` | `str` | Machine-readable error code (e.g., `UNAUTHORIZED`, `VALIDATION_ERROR`, `BAD_REQUEST`, `FORBIDDEN_ACCESS`, `NOT_FOUND`, `INTERNAL_SERVER_ERROR`) |
-| `message` | `str` | Human-readable explanation of the error |
-| `timestamp` | `str` | ISO-8601 UTC timestamp of error occurrence |
+1. Run Alembic database migrations to apply latest schema revisions:
+   ```bash
+   alembic upgrade head
+   ```
 
-### Example Error Response (`401 Unauthorized`)
-```json
-{
-  "error_code": "UNAUTHORIZED",
-  "message": "Could not validate credentials",
-  "timestamp": "2026-10-10T14:30:00.000000+00:00"
-}
-```
+2. Start the Uvicorn ASGI development server:
+   ```bash
+   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+3. Access the interactive API Control Center dashboard at **[http://localhost:8000/](http://localhost:8000/)** or FastAPI Swagger Docs at **[http://localhost:8000/docs](http://localhost:8000/docs)**.
 
 ---
 
-## ⚡ Rate Limiting Policy & Redis Storage Mechanics
-To protect against brute-force attacks and abuse, Sentinel Auth Vault enforces strict rate limiting via high-performance sliding window tracking:
-- **Authentication Routes (`/api/v1/auth/*`)**: Strictly limited to **5 requests per minute** per client IP.
-- **Resource / Standard Routes**: Limited to **60 requests per minute** per client IP.
+## 🔐 API Reference & Authentication Guide
 
-### Response Rate Limit Headers
-Every response includes rate limit telemetry headers:
-- `X-RateLimit-Limit`: Maximum allowed requests within the current window.
-- `X-RateLimit-Remaining`: Remaining request quota in the current window.
-- `Retry-After`: Seconds to wait before retrying (included only upon 429 response).
-
-### Rate Limit Exceeded Response (`429 Too Many Requests`)
-```json
-{
-  "error_code": "RATE_LIMIT_EXCEEDED",
-  "message": "Rate limit exceeded. Maximum 5 requests per minute allowed. Retry after 58 seconds.",
-  "timestamp": "2026-10-10T14:32:10.000000+00:00"
-}
-```
-
----
-
-## 📚 API Specification & Documentation
-Sentinel Auth Vault provides rich, production-grade OpenAPI spec coverage across all routes (`/docs` and `/redoc`), adhering strictly to RESTful conventions and standardized Pydantic error payloads.
-
-### API Routes & Status Codes Summary
-| Endpoint | Method | Status Codes | Description |
-| :--- | :--- | :--- | :--- |
-| `/api/v1/auth/register` | `POST` | `201`, `400`, `422`, `500` | Register a new user account |
-| `/api/v1/auth/login` | `POST` | `200`, `401`, `422`, `500` | Authenticate user & issue JWT Bearer token |
-| `/api/v1/auth/logout` | `POST` | `200`, `401`, `500` | Revoke active session / logout |
-| `/api/v1/users/me` | `GET` | `200`, `401`, `404`, `500` | Fetch current authenticated user profile |
-| `/api/v1/users/me` | `PATCH` | `200`, `401`, `422`, `500` | Update current user profile properties |
-| `/api/v1/tasks/` | `POST` | `201`, `401`, `422`, `500` | Create a new task |
-| `/api/v1/tasks/` | `GET` | `200`, `401`, `422`, `500` | List tasks with filtering, search & sorting |
-| `/api/v1/tasks/{id}` | `GET` | `200`, `401`, `404`, `500` | Fetch single task by ID |
-| `/api/v1/tasks/{id}` | `PATCH` | `200`, `401`, `404`, `422`, `500` | Update task by ID |
-| `/api/v1/tasks/{id}` | `DELETE` | `204`, `401`, `404`, `500` | Delete task by ID |
-| `/api/v1/external/weather` | `GET` | `200`, `422`, `500` | Third-party weather integration facade |
-| `/api/v1/chat/assistant` | `POST` | `200`, `422`, `500` | AI Chat Assistant natural language executor |
-| `/api/v1/system/status` | `GET` | `200`, `500` | System metrics & health telemetry |
-
----
-
-## 🛡️ RBAC Architecture & Role Hierarchy Matrix
-Sentinel Auth Vault implements strict granular Role-Based Access Control (RBAC) via FastAPI dependency factories (`has_role([...])`). Unauthorized requests return HTTP 401 (`UNAUTHORIZED`), while unauthorized role access returns HTTP 403 (`FORBIDDEN_ACCESS`) formatted in the standardized error payload.
-
-### Role Hierarchy & Permissions Matrix
-| Role | Superuser | Allowed Endpoints / Actions | Error on Breach |
-| :--- | :--- | :--- | :--- |
-| `ADMIN` | Yes | Full system access, User management, Task administration | `403 FORBIDDEN_ACCESS` |
-| `MANAGER` | No | Team management, Task CRUD, Reports | `403 FORBIDDEN_ACCESS` |
-| `USER` | No | Personal profile management, Personal task CRUD | `403 FORBIDDEN_ACCESS` |
-
----
-
-## 🧪 Testing & Code Quality Checks
-- **Run Tests (Zero Warnings):**
-  ```bash
-  python -m pytest
+### 1. Register User (`POST /api/v1/auth/register`)
+- **Payload:**
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "SecurePassword123!",
+    "full_name": "Test User"
+  }
   ```
-- **Run Linter (Ruff):**
+
+### 2. Login & Obtain JWT Token (`POST /api/v1/auth/login`)
+- **Content-Type:** `application/x-www-form-urlencoded`
+- **Form Fields:** `username` (email), `password`, `grant_type` (`password`)
+- **cURL Example:**
   ```bash
-  python -m ruff check .
+  curl -X POST "http://localhost:8000/api/v1/auth/login" \
+       -H "Content-Type: application/x-www-form-urlencoded" \
+       -d "username=user@example.com&password=SecurePassword123!&grant_type=password"
   ```
-- **Run Type Checker (Mypy):**
+
+### 3. Authorized Task Management (`/api/v1/tasks/`)
+- Include the Bearer token in the `Authorization` header for protected endpoints:
   ```bash
-  python -m mypy .
+  curl -X GET "http://localhost:8000/api/v1/tasks/" \
+       -H "Authorization: Bearer <YOUR_JWT_TOKEN>"
   ```
 
 ---
 
-## 🐳 Docker Execution
-```bash
-docker-compose up --build
-```
+## 🛡️ Core Technical Mechanisms
+
+- **Centralized Error Handling:** Global exception handlers catch FastAPI `HTTPException`, SQLAlchemy errors, and unhandled exceptions, returning uniform JSON error responses (`app/schemas/error.py`).
+- **Rate Limiting Middleware:** Sliding window rate limiter tracking client requests per minute, returning HTTP 429 when limits are exceeded with informative headers.
+- **RBAC & Security:** Dependency injection (`app/core/deps.py`) enforces active user status, token verification, and role privileges (`role` field on `UserModel`).
+- **External Facade:** Service wrapper (`app/services/external_service.py`) securely abstracts third-party weather API calls with timeout controls and shielding.
+
+---
+
+## 🧪 Testing & Code Quality Assurance
+
+- **Run Pytest Test Suite:**
+  ```bash
+  python -m pytest -v
+  ```
+- **Run Ruff Linter:**
+  ```bash
+  ruff check .
+  ```
+- **Run Mypy Type Check:**
+  ```bash
+  mypy app tests
+  ```
+
+---
+
+## 🐳 Containerization & Docker
+
+1. Build and run using Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+2. The application runs on port 8000 alongside an isolated PostgreSQL container instance.
