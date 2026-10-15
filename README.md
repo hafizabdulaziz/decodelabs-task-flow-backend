@@ -66,7 +66,9 @@ task-flow-backend/
 ├── Dockerfile               # Production container specification
 ├── docker-compose.yml       # Local multi-container stack (App + PostgreSQL)
 └── requirements.txt         # Exact Python package dependencies
+
 Detailed Component Breakdown
+
 1. API Controllers (app/api/v1/)
 auth.py: Manages user sign-up with email uniqueness validation, OAuth2 password login yielding signed JWT access tokens, and a logout endpoint that revokes active sessions.
 
